@@ -3,6 +3,7 @@ black = "#7FBAFF"
 blue = "#7F7FFF"
 cyan = "#7F7FFF"
 green = "#485e30"
+# green = "#9999CC"
 magenta = "#7F3FBF"
 red = "#FF7F7F"
 white = "#E3E3EA"
@@ -13,14 +14,15 @@ black = "#08052B"
 blue = "#7FBAFF"
 cyan = "#7F7FFF"
 green = "#9ece6a"
+# green = "#7F3FBF"
 magenta = "#7F3FBF"
 red = "#FF7F7F"
 white = "#CDCCDB"
 yellow = "#CC3980"
 
 [colors.primary]
-# background = "#1A1B26"
-background = "#16161e"
+background = "#1A1B26"
+# background = "#16161e"
 foreground = "#E3E3EA"
 
 [font]
@@ -39,4 +41,4 @@ family = "Jetbrains Mono Nerd Font"
 style = "Regular"
 
 [window]
-opacity = 0.92
+opacity = 0.94
