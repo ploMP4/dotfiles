@@ -1,3 +1,0 @@
-local treesitter = {}
-
-return treesitter
