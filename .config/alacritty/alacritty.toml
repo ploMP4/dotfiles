@@ -1,0 +1,42 @@
+[colors.bright]
+black = "#7FBAFF"
+blue = "#7F7FFF"
+cyan = "#7F7FFF"
+green = "#485e30"
+magenta = "#7F3FBF"
+red = "#FF7F7F"
+white = "#E3E3EA"
+yellow = "#FF7F7F"
+
+[colors.normal]
+black = "#08052B"
+blue = "#7FBAFF"
+cyan = "#7F7FFF"
+green = "#9ece6a"
+magenta = "#7F3FBF"
+red = "#FF7F7F"
+white = "#CDCCDB"
+yellow = "#CC3980"
+
+[colors.primary]
+# background = "#1A1B26"
+background = "#16161e"
+foreground = "#E3E3EA"
+
+[font]
+size = 11
+
+[font.bold]
+family = "Jetbrains Mono Nerd Font"
+style = "Bold"
+
+[font.italic]
+family = "Jetbrains Mono Nerd Font"
+style = "Italic"
+
+[font.normal]
+family = "Jetbrains Mono Nerd Font"
+style = "Regular"
+
+[window]
+opacity = 0.92
