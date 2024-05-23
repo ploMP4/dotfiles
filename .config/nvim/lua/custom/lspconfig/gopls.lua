@@ -8,6 +8,20 @@ return {
 		gopls = {
 			completeUnimported = true,
 			usePlaceholders = true,
+			hints = {
+				compositeLiteralFields = true,
+				compositeLiteralTypes = true,
+				constantValues = true,
+				parameterNames = true,
+				rangeVariableTypes = true,
+			},
+			codelenses = {
+				generate = true, -- show the `go generate` lens.
+				gc_details = true, -- show a code lens toggling the display of gc's choices.
+				test = true,
+				upgrade_dependency = true,
+				tidy = true,
+			},
 		},
 	},
 }

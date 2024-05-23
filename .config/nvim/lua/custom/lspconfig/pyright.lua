@@ -9,9 +9,10 @@ return {
 			analysis = {
 				autoImportCompletions = true,
 				autoSearchPaths = true,
+				-- diagnosticMode = "workspace",
 				typeCheckingMode = "normal",
 				useLibraryCodeForTypes = true,
-				diagnosticSeverityOvverides = {
+				diagnosticSeverityOverrides = {
 					reportAttributeAccessIssue = "none",
 				},
 			},
