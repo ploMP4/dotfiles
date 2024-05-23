@@ -38,7 +38,7 @@ return {
 
 			local bufremove = require("mini.bufremove")
 			bufremove.setup({})
-			vim.keymap.set("n", "<leader>c", bufremove.delete, { desc = "Close current buffer" })
+			vim.keymap.set("n", "<leader>c", bufremove.delete, { desc = "[C]lose current buffer" })
 
 			local statusline = require("mini.statusline")
 			statusline.setup({ use_icons = vim.g.have_nerd_font })

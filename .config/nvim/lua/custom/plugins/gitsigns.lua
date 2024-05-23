@@ -21,7 +21,7 @@ return {
 				gitsigns.next_hunk()
 			end)
 			return "<Ignore>"
-		end, { desc = "Jump to next hunk", expr = true })
+		end, { desc = "[G]it [H]unk [N]ext", expr = true })
 
 		vim.keymap.set("n", "<leader>ghb", function()
 			if vim.wo.diff then
@@ -31,7 +31,7 @@ return {
 				gitsigns.prev_hunk()
 			end)
 			return "<Ignore>"
-		end, { desc = "Jump to prev hunk", expr = true })
+		end, { desc = "[G]it [H]unk [P]rev", expr = true })
 
 		vim.keymap.set("n", "<leader>ghp", gitsigns.preview_hunk, { desc = "[G]it [H]unk [P]review" })
 		vim.keymap.set("n", "<leader>ghr", gitsigns.reset_hunk, { desc = "[G]it [H]unk [R]eset" })
