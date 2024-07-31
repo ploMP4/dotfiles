@@ -3,7 +3,7 @@ local set = vim.keymap.set
 -- Diagnostic keymaps
 set("n", "<leader>lj", vim.diagnostic.goto_prev, { desc = "[L]sp previous [D]iagnostic message" })
 set("n", "<leader>lk", vim.diagnostic.goto_next, { desc = "[L]sp next [D]iagnostic message" })
-set("n", "<leader>lw", vim.diagnostic.open_float, { desc = "[L]sp diagnostic [E]rror messages" })
+set("n", "<leader>ld", vim.diagnostic.open_float, { desc = "[L]sp [D]iagnostic view" })
 set("n", "<leader>lq", vim.diagnostic.setloclist, { desc = "[L]sp diagnostic [Q]uickfix list" })
 
 set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
