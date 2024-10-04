@@ -8,6 +8,9 @@ return {
 				["<C-l>"] = false,
 				["<M-h>"] = "actions.select_split",
 			},
+			view_options = {
+				show_hidden = true,
+			},
 		})
 
 		vim.keymap.set("n", "<leader>e", "<CMD>Oil<CR>", { desc = "Open file tree" })
