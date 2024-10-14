@@ -25,7 +25,7 @@
 font pango: JetBrains Mono Regular 10
 # font pango: Noto Sans Regular 10
 
-# set the mod key to the winkey:
+# set the mod key to the alt:
 set $mod Mod1
 
 #####################
@@ -57,6 +57,7 @@ new_window pixel 1
 gaps inner 10
 gaps outer 3
 
+smart_gaps on
 # show window title bars (not officially supported with i3gaps)
 #default_border normal
 
@@ -434,6 +435,8 @@ exec --no-startup-id xinput set-prop 12 'libinput Accel Speed' 0.7
 
 # multiple languages
 exec --no-startup-id setxkbmap -layout "us,gr" -option "grp:toggle"
+
+exec --no-startup-id redshift -c $HOME/.config/redshift.conf
 
 # autotiling script
 # https://github.com/nwg-piotr/autotiling
