@@ -8,7 +8,10 @@ fi
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
+export MANPAGER="nvim +Man!"
+
 export PATH="$HOME/go/bin:$PATH"
+export PATH="$HOME/.cargo/bin:$PATH"
 
 
 # Path to your oh-my-zsh installation.
@@ -140,6 +143,8 @@ zstyle ':completion:*' menu no
 alias ls="ls -la --color"
 alias vim="nvim"
 alias grep="rg"
+alias clx="clx -n"
+alias lg="lazygit"
 # alias debugpy="~/.local/share/nvim/mason/bin/debugpy"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
