@@ -17,6 +17,8 @@ set("n", "<C-u>", "<C-u>zz", { desc = "Center screen after jumping up" })
 set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selected lines down" })
 set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move selected lines up" })
 
+set("n", "<C-w>f", "<C-w>| <C-w>_", { desc = "Max out window" })
+
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
