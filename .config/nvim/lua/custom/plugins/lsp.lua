@@ -61,7 +61,9 @@ return { -- LSP Configuration & Plugins
 				--  To jump back, press <C-t>.
 				map("gd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
 
-				map("gs", "<c-w>v<cmd>lua vim.lsp.buf.definition()<CR>", "[G]oto Definition [S]plit")
+				map("gs", "<c-w>s<cmd>lua vim.lsp.buf.definition()<CR>", "[G]oto Definition [S]plit")
+
+				map("gv", "<c-w>v<cmd>lua vim.lsp.buf.definition()<CR>", "[G]oto Definition Split [V]ertical")
 
 				-- Find references for the word under your cursor.
 				map("gr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
