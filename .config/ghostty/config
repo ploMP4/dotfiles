@@ -1,0 +1,12 @@
+theme = tokyonight_night
+font-family = JetBrainsMono Nerd Font
+background-opacity = 0.90
+font-size = 18
+cursor-style = block
+cursor-style-blink = false
+shell-integration-features = no-cursor
+font-feature = -calt
+
+window-decoration = true
+gtk-titlebar = false
+gtk-adwaita = false
