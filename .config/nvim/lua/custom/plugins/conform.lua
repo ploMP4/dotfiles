@@ -31,6 +31,7 @@ return { -- Autoformat
 			c = { "clang-format" },
 			cpp = { "clang-format" },
 			gleam = { "gleam" },
+			templ = { "templ" },
 			-- zig = { "zig" },
 		},
 	},
