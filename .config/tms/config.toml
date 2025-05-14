@@ -1,0 +1,11 @@
+[[search_dirs]]
+path = "~/Documents"
+depth = 3
+
+[[search_dirs]]
+path = "~/sandbox"
+depth = 3
+
+[[search_dirs]]
+path = "~/"
+depth = 1
