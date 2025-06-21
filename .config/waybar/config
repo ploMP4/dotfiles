@@ -1,9 +1,9 @@
 {
     "layer": "bottom",
     "position": "bottom",
-    "height": 20,
+    "height": 30,
     "modules-left": ["hyprland/workspaces", "hyprland/window"],
-    "modules-right": ["custom/recorder", "tray", "battery", "pulseaudio", "backlight", "custom/powermenu", "clock"],
+    "modules-right": ["custom/recorder", "tray", "battery", "custom/disk", "pulseaudio", "backlight", "custom/powermenu", "clock"],
     "hyprland/workspaces": {
         "disable-scroll": true,
         "all-outputs": false,
@@ -36,12 +36,12 @@
     },
     "custom/powermenu": {
         "return-type": "json",
-        "exec": "/home/marco/.config/waybar/modules/powermenu.sh",
+        "exec": "~/.config/waybar/modules/powermenu.sh",
         "format": "<span font='Font Awesome 5 Free 9'>{icon}</span>  {}",
         "format-icons": [""],
         "interval": 3600,
         "escape": true,
-        "on-click": "/home/marco/.config/wofi/wofi-power.sh"
+        "on-click": "~/.config/rofi/powermenu/type-1/powermenu.sh"
     },
     "custom/recorder": {
 		"format": "!",
@@ -65,6 +65,14 @@
         },
         "tooltip": false
     },
+	"custom/disk": {
+		"return-type": "json",
+        "format": "<span font='Font Awesome 5 Free 11'>{icon}</span>   {text}",
+		"format-icons": [""],
+		"exec": "~/.config/waybar/modules/disk_usage.sh",
+		"interval": 30,
+		"tooltip": false
+	},
     "network": {
         "format": "{icon}",
         "format-alt": "<span font='Font Awesome 5 Free 10'>︁</span> ︁{ipaddr}/{cidr} {icon}",
