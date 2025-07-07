@@ -26,16 +26,19 @@
 
 /* Padding around title window name */
 #window {
-	padding: 0 12px;
+	padding: 0 6px;
 }
 
 /* Main bar window */
 window#waybar {
+	margin: 6px 12px;
+	padding: 4px 12px;
+
 	background: rgba(26, 27, 38, 0.7);
 	/* semi‑transparent */
 	border-radius: 16px;
 	border: 1px solid rgba(118, 126, 158, 0.35);
-	box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.35);
+	/* box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.35); */
 	transition: background 0.3s ease, border 0.3s ease;
 }
 
