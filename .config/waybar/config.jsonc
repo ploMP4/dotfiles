@@ -2,9 +2,25 @@
     "layer": "top",
     "position": "top",
     "height": 34,
-    "modules-left": ["hyprland/workspaces", "hyprland/window"],
-	"modules-center": ["clock"],
-    "modules-right": ["custom/recorder", "tray", "battery", "custom/disk", "pulseaudio", "backlight", "custom/powermenu"],
+    "margin-top": 1,
+    "margin-left": 4,
+    "margin-right": 4,
+    "modules-left": [
+        "hyprland/workspaces",
+        "hyprland/window"
+    ],
+    "modules-center": [
+        "clock"
+    ],
+    "modules-right": [
+        "custom/recorder",
+        "tray",
+        "battery",
+        "custom/disk",
+        "pulseaudio",
+        "backlight",
+        "custom/powermenu"
+    ],
     "hyprland/workspaces": {
         "disable-scroll": true,
         "all-outputs": false,
@@ -39,23 +55,31 @@
         "return-type": "json",
         "exec": "~/.config/waybar/modules/powermenu.sh",
         "format": "<span font='Font Awesome 5 Free 9'>{icon}</span>  {}",
-        "format-icons": [""],
+        "format-icons": [
+            ""
+        ],
         "interval": 3600,
         "escape": true,
         "on-click": "~/.config/rofi/powermenu/type-1/powermenu.sh"
     },
     "custom/recorder": {
-		"format": "!",
-		"return-type": "json",
-		"interval": 3,
-		"exec": "echo '{\"class\": \"recording\"}'",
-		"exec-if": "pgrep wf-recorder",
+        "format": "!",
+        "return-type": "json",
+        "interval": 3,
+        "exec": "echo '{\"class\": \"recording\"}'",
+        "exec-if": "pgrep wf-recorder",
         "tooltip": false,
         "on-click": "killall -s SIGINT wf-recorder"
-	},
+    },
     "battery": {
         "format": "<span font='Font Awesome 5 Free 11'>{icon}</span>   {capacity}%{time}",
-        "format-icons": ["", "", "", "", ""],
+        "format-icons": [
+            "",
+            "",
+            "",
+            "",
+            ""
+        ],
         "format-time": " ({H}h{M}m)",
         "format-charging": "<span font='Font Awesome 5 Free'></span>  <span font='Font Awesome 5 Free 11'>{icon}</span>  {capacity}% - {time}",
         "format-full": "<span font='Font Awesome 5 Free'></span>  <span font='Font Awesome 5 Free 11'>{icon}</span>  Charged",
@@ -66,14 +90,16 @@
         },
         "tooltip": false
     },
-	"custom/disk": {
-		"return-type": "json",
+    "custom/disk": {
+        "return-type": "json",
         "format": "<span font='Font Awesome 5 Free 11'>{icon}</span>   {text}",
-		"format-icons": [""],
-		"exec": "~/.config/waybar/modules/disk_usage.sh",
-		"interval": 30,
-		"tooltip": false
-	},
+        "format-icons": [
+            ""
+        ],
+        "exec": "~/.config/waybar/modules/disk_usage.sh",
+        "interval": 30,
+        "tooltip": false
+    },
     "network": {
         "format": "{icon}",
         "format-alt": "<span font='Font Awesome 5 Free 10'>︁</span> ︁{ipaddr}/{cidr} {icon}",
@@ -89,8 +115,18 @@
         "format-alt-click": "click-right",
         "format-muted": "<span font='Font Awesome 5 Free 11'></span>",
         "format-icons": {
-            "phone": [" ", " ", " ", " "],
-            "default": ["", "", "", ""]
+            "phone": [
+                " ",
+                " ",
+                " ",
+                " "
+            ],
+            "default": [
+                "",
+                "",
+                "",
+                ""
+            ]
         },
         "scroll-step": 2,
         "on-click": "pavucontrol",
@@ -100,7 +136,10 @@
         "format": "{icon} {percent}%",
         "format-alt": "{icon}",
         "format-alt-click": "click-left",
-        "format-icons": ["", ""],
+        "format-icons": [
+            "",
+            ""
+        ],
         "on-scroll-up": "light -A 1",
         "on-scroll-down": "light -U 1"
     },
@@ -115,7 +154,7 @@
             "", // Icon: temperature-quarter
             "", // Icon: temperature-half
             "", // Icon: temperature-three-quarters
-            ""  // Icon: temperature-full
+            "" // Icon: temperature-full
         ]
     }
 }
