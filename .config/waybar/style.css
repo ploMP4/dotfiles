@@ -11,9 +11,6 @@
  *   magenta  #bb9af7
  *   cyan     #7dcfff
  *   white    #a9b1d6
- * Tips ✨
- *   ‑ You can enable blur with:  "gtk-layer-shell" or a compositor (e.g. hyprland‑blur)
- *   ‑ The bar background is semi‑transparent to let wallpapers shine through.
  */
 
 /* ========== Global ========== */
@@ -36,9 +33,8 @@ window#waybar {
 
 	background: rgba(26, 27, 38, 0.7);
 	/* semi‑transparent */
-	border-radius: 16px;
+	border-radius: 12px;
 	border: 1px solid rgba(118, 126, 158, 0.35);
-	/* box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.35); */
 	transition: background 0.3s ease, border 0.3s ease;
 }
 
