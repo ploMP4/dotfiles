@@ -1,85 +1,113 @@
+/* Tokyonight Transparent Waybar Theme
+ * Author: ChatGPT
+ * Palette (Tokyonight‑Night)
+ *   bg       #1a1b26
+ *   fg       #c0caf5
+ *   black    #15161e
+ *   red      #f7768e
+ *   green    #9ece6a
+ *   yellow   #e0af68
+ *   blue     #7aa2f7
+ *   magenta  #bb9af7
+ *   cyan     #7dcfff
+ *   white    #a9b1d6
+ * Tips ✨
+ *   ‑ You can enable blur with:  "gtk-layer-shell" or a compositor (e.g. hyprland‑blur)
+ *   ‑ The bar background is semi‑transparent to let wallpapers shine through.
+ */
+
+/* ========== Global ========== */
 #waybar {
-	font-family: "SF Pro Display", Cantarell, Noto Sans, sans-serif;
-	font-size: 16px;
+	font-family: "SF Pro Display", Cantarell, "Noto Sans", sans-serif;
+	font-size: 15px;
+	color: #c0caf5;
+	/* main foreground */
 }
 
+/* Padding around title window name */
 #window {
-	padding: 0 10px;
+	padding: 0 12px;
 }
 
+/* Main bar window */
 window#waybar {
-	border: none;
-	border-radius: 0;
-	box-shadow: none;
-	text-shadow: none;
-	transition-duration: 0s;
-	color: rgba(217, 216, 216, 1);
-	background: #1a1b26;
+	background: rgba(26, 27, 38, 0.7);
+	/* semi‑transparent */
+	border-radius: 16px;
+	border: 1px solid rgba(118, 126, 158, 0.35);
+	box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.35);
+	transition: background 0.3s ease, border 0.3s ease;
 }
 
+/* When bar is hidden/overlay (optional) */
+window#waybar.hidden {
+	opacity: 0.0;
+}
+
+/* ========== Workspaces ========== */
 #workspaces {
-	margin: 0 5px;
+	margin: 0 6px;
 }
 
 #workspaces button {
-	padding: 0 8px;
-	color: #565f89;
-	border: 3px solid rgba(9, 85, 225, 0);
-	border-radius: 10px;
-	min-width: 33px;
-}
-
-#workspaces button.visible {
-	color: #a9b1d6;
-}
-
-#workspaces button.focused {
-	border-top: 3px solid #7aa2f7;
-	border-bottom: 3px solid #7aa2f7;
-}
-
-#workspaces button.urgent {
-	background-color: #a96d1f;
-	color: white;
+	padding: 3px 10px;
+	margin: 0 2px;
+	min-width: 34px;
+	color: #c0caf5;
+	/* inactive */
+	background: transparent;
+	border-radius: 8px;
+	border: 2px solid transparent;
+	transition: all 0.2s ease;
 }
 
 #workspaces button:hover {
-	box-shadow: inherit;
-	border-color: #bb9af7;
 	color: #bb9af7;
+	border-color: rgba(187, 154, 247, 0.35);
 }
 
-/* Repeat style here to ensure properties are overwritten as there's no !important and button:hover above resets the colour */
+#workspaces button.visible {
+	color: #bb9af7;
+}
 
 #workspaces button.focused {
 	color: #7aa2f7;
+	border-color: #7aa2f7;
 }
 
 #workspaces button.focused:hover {
-	color: #bb9af7;
+	color: #7dcfff;
+	border-color: #7dcfff;
 }
 
-#pulseaudio {
-	/* font-size: 26px; */
+#workspaces button.urgent {
+	color: #1a1b26;
+	background: #f7768e;
+	border-color: #f7768e;
+	animation: blink 1s steps(2) infinite;
 }
 
-#custom-recorder {
-	font-size: 18px;
-	margin: 2px 7px 0px 7px;
-	color: #ee2e24;
+/* Blinking urgent workspace */
+@keyframes blink {
+	50% {
+		background-color: #1a1b26;
+		color: #f7768e;
+	}
 }
 
-#tray,
-#mode,
+/* ===== Modules ===== */
+/* Common module wrapper */
 #battery,
 #temperature,
 #cpu,
 #memory,
 #network,
 #pulseaudio,
+#backlight,
+#tray,
+#clock,
 #idle_inhibitor,
 #sway-language,
-#backlight,
 #custom-storage,
 #custom-cpu_speed,
 #custom-powermenu,
@@ -87,39 +115,50 @@ window#waybar {
 #custom-weather,
 #custom-mail,
 #custom-media {
-	margin: 0px 0px 0px 10px;
-	padding: 0 5px;
-	/* border-top: 3px solid rgba(217, 216, 216, 0.5); */
+	margin: 0 6px;
+	padding: 0 8px;
+	/* border-radius: 8px; */
+	/* background: rgba(17, 18, 25, 0.35); */
+	/* border: 1px solid rgba(118, 126, 158, 0.25); */
 }
 
-/* #clock {
-    margin:     0px 16px 0px 10px;
-    min-width:  140px;
-} */
 
+/* Battery states */
 #battery.warning {
-	color: rgba(255, 210, 4, 1);
+	color: #e0af68;
 }
 
 #battery.critical {
-	color: rgba(238, 46, 36, 1);
+	color: #f7768e;
 }
 
 #battery.charging {
-	color: rgba(217, 216, 216, 1);
+	color: #9ece6a;
 }
 
+/* Storage states */
 #custom-storage.warning {
-	color: rgba(255, 210, 4, 1);
+	color: #e0af68;
 }
 
 #custom-storage.critical {
-	color: rgba(238, 46, 36, 1);
+	color: #f7768e;
 }
 
-@keyframes blink {
-	to {
-		background-color: #ffffff;
-		color: black;
-	}
+/* Recorder icon */
+#custom-recorder {
+	font-size: 18px;
+	margin: 0 10px;
+	color: #f7768e;
+}
+
+/* Idle inhibitor enabled flicker */
+#idle_inhibitor.activated {
+	color: #7dcfff;
+}
+
+/* Media info shorten & scroll */
+#custom-media {
+	min-width: 180px;
+	animation: scroll 10s linear infinite;
 }

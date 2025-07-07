@@ -1,9 +1,10 @@
 {
-    "layer": "bottom",
-    "position": "bottom",
-    "height": 30,
+    "layer": "top",
+    "position": "top",
+    "height": 34,
     "modules-left": ["hyprland/workspaces", "hyprland/window"],
-    "modules-right": ["custom/recorder", "tray", "battery", "custom/disk", "pulseaudio", "backlight", "custom/powermenu", "clock"],
+	"modules-center": ["clock"],
+    "modules-right": ["custom/recorder", "tray", "battery", "custom/disk", "pulseaudio", "backlight", "custom/powermenu"],
     "hyprland/workspaces": {
         "disable-scroll": true,
         "all-outputs": false,
