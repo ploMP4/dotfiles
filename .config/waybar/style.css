@@ -33,7 +33,7 @@ window#waybar {
 
 	background: rgba(26, 27, 38, 0.7);
 	/* semi‑transparent */
-	border-radius: 12px;
+	border-radius: 8px;
 	border: 1px solid rgba(118, 126, 158, 0.35);
 	transition: background 0.3s ease, border 0.3s ease;
 }
