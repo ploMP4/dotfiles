@@ -1,163 +1,54 @@
-/* Tokyonight Transparent Waybar Theme
- * Author: ChatGPT
- * Palette (Tokyonight‑Night)
- *   bg       #1a1b26
- *   fg       #c0caf5
- *   black    #15161e
- *   red      #f7768e
- *   green    #9ece6a
- *   yellow   #e0af68
- *   blue     #7aa2f7
- *   magenta  #bb9af7
- *   cyan     #7dcfff
- *   white    #a9b1d6
- */
-
-/* ========== Global ========== */
-#waybar {
-	font-family: "SF Pro Display", Cantarell, "Noto Sans", sans-serif;
-	font-size: 15px;
-	color: #c0caf5;
-	/* main foreground */
+* {
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 12px;
+  min-height: 0;
+  border: none;
+  border-radius: 0;
 }
 
-/* Padding around title window name */
-#window {
-	padding: 0 6px;
-}
-
-/* Main bar window */
 window#waybar {
-	margin: 6px 12px;
-	padding: 4px 12px;
-
-	background: rgba(26, 27, 38, 0.7);
-	/* semi‑transparent */
-	border-radius: 8px;
-	border: 1px solid rgba(118, 126, 158, 0.35);
-	transition: background 0.3s ease, border 0.3s ease;
-}
-
-/* When bar is hidden/overlay (optional) */
-window#waybar.hidden {
-	opacity: 0.0;
-}
-
-/* ========== Workspaces ========== */
-#workspaces {
-	margin: 0 6px;
+  background: rgba(26, 27, 38, 0.7);
+  color: #c0caf5;
 }
 
 #workspaces button {
-	padding: 3px 10px;
-	margin: 0 2px;
-	min-width: 34px;
-	color: #c0caf5;
-	/* inactive */
-	background: transparent;
-	border-radius: 8px;
-	border: 2px solid transparent;
-	transition: all 0.2s ease;
+  padding: 0 8px;
+  color: #565f89;
+  background: transparent;
+}
+
+#workspaces button.active {
+  color: #7aa2f7;
+  background: rgba(122, 162, 247, 0.15);
 }
 
 #workspaces button:hover {
-	color: #bb9af7;
-	border-color: rgba(187, 154, 247, 0.35);
+  color: #c0caf5;
+  background: rgba(36, 40, 59, 0.5);
 }
 
-#workspaces button.visible {
-	color: #bb9af7;
-}
-
-#workspaces button.focused {
-	color: #7aa2f7;
-	border-color: #7aa2f7;
-}
-
-#workspaces button.focused:hover {
-	color: #7dcfff;
-	border-color: #7dcfff;
-}
-
-#workspaces button.urgent {
-	color: #1a1b26;
-	background: #f7768e;
-	border-color: #f7768e;
-	animation: blink 1s steps(2) infinite;
-}
-
-/* Blinking urgent workspace */
-@keyframes blink {
-	50% {
-		background-color: #1a1b26;
-		color: #f7768e;
-	}
-}
-
-/* ===== Modules ===== */
-/* Common module wrapper */
-#battery,
-#temperature,
-#cpu,
-#memory,
-#network,
-#pulseaudio,
-#backlight,
-#tray,
 #clock,
-#idle_inhibitor,
-#sway-language,
-#custom-storage,
-#custom-cpu_speed,
-#custom-powermenu,
-#custom-spotify,
-#custom-weather,
-#custom-mail,
-#custom-media {
-	margin: 0 6px;
-	padding: 0 8px;
-	/* border-radius: 8px; */
-	/* background: rgba(17, 18, 25, 0.35); */
-	/* border: 1px solid rgba(118, 126, 158, 0.25); */
+#disk,
+#bluetooth,
+#network,
+#pulseaudio {
+  padding: 0 8px;
+  color: #a9b1d6;
 }
 
-
-/* Battery states */
-#battery.warning {
-	color: #e0af68;
+#bluetooth.connected {
+  color: #7aa2f7;
 }
 
-#battery.critical {
-	color: #f7768e;
+#bluetooth.disabled,
+#bluetooth.off {
+  color: #565f89;
 }
 
-#battery.charging {
-	color: #9ece6a;
+#network.disconnected {
+  color: #565f89;
 }
 
-/* Storage states */
-#custom-storage.warning {
-	color: #e0af68;
-}
-
-#custom-storage.critical {
-	color: #f7768e;
-}
-
-/* Recorder icon */
-#custom-recorder {
-	font-size: 18px;
-	margin: 0 10px;
-	color: #f7768e;
-}
-
-/* Idle inhibitor enabled flicker */
-#idle_inhibitor.activated {
-	color: #7dcfff;
-}
-
-/* Media info shorten & scroll */
-#custom-media {
-	min-width: 180px;
-	animation: scroll 10s linear infinite;
+#pulseaudio.muted {
+  color: #565f89;
 }

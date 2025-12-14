@@ -1,160 +1,59 @@
 {
-    "layer": "top",
-    "position": "top",
-    "height": 34,
-    "margin-top": 1,
-    "margin-left": 4,
-    "margin-right": 4,
-    "modules-left": [
-        "hyprland/workspaces",
-        "hyprland/window"
-    ],
-    "modules-center": [
-        "clock"
-    ],
-    "modules-right": [
-        "custom/recorder",
-        "tray",
-        "battery",
-        "custom/disk",
-        "pulseaudio",
-        "backlight",
-        "custom/powermenu"
-    ],
-    "hyprland/workspaces": {
-        "disable-scroll": true,
-        "all-outputs": false,
-        "disable-markup": false,
-        "format": "{icon}",
-        "format-icons": {
-            "1": "<span font='Font Awesome 5 Free 14'></span>",
-            "2": "<span font='Font Awesome 5 Free 14'></span>",
-            "3": "<span font='Font Awesome 5 Free 14'></span>",
-            "4": "<span font='Font Awesome 5 Free 14'></span>",
-            "5": "<span font='Font Awesome 5 Free 14'></span>",
-            "6": "<span font='Font Awesome 5 Free 14'></span>",
-            "7": "<span font='Font Awesome 5 Free 14'></span>",
-            "8": "<span font='Font Awesome 5 Free 14'></span>",
-            "9": "<span font='Font Awesome 5 Free 14'></span>",
-        }
+  "layer": "top",
+  "position": "top",
+  "height": 24,
+  "margin": 0,
+  "spacing": 0,
+  "modules-left": [
+    "hyprland/workspaces"
+  ],
+  "modules-center": [
+    "clock"
+  ],
+  "modules-right": [
+    "disk",
+    "bluetooth",
+    "network",
+    "pulseaudio"
+  ],
+  "hyprland/workspaces": {
+    "format": "{name}",
+    "on-click": "activate",
+    "sort-by-number": true
+  },
+  "clock": {
+    "format": "{:%H:%M}",
+    "tooltip-format": "{:%A, %B %d, %Y}"
+  },
+  "disk": {
+    "format": "󰋊 {percentage_used}%",
+    "path": "/",
+    "tooltip-format": "{used} / {total}"
+  },
+  "bluetooth": {
+    "format": "󰂯",
+    "format-connected": "󰂱 {device_alias}",
+    "format-disabled": "󰂲",
+    "format-off": "󰂲",
+    "on-click": "blueman-manager",
+    "tooltip-format": "{status}"
+  },
+  "network": {
+    "format-wifi": "󰤨 {essid}",
+    "format-ethernet": "󰈀 {ifname}",
+    "format-disconnected": "󰤭",
+    "tooltip-format": "{ipaddr}"
+  },
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "format-muted": "󰝟",
+    "format-icons": {
+      "default": [
+        "󰕿",
+        "󰖀",
+        "󰕾"
+      ]
     },
-    "tray": {
-        "icon-size": 20,
-        "spacing": 8
-    },
-    "hyprland/window": {
-        "max-length": 60,
-        "tooltip": false
-        // "format": "( {} )"
-    },
-    "clock": {
-        "format": "{:%a %d %b - %H:%M}",
-        "tooltip": false
-    },
-    "custom/powermenu": {
-        "return-type": "json",
-        "exec": "~/.config/waybar/modules/powermenu.sh",
-        "format": "<span font='Font Awesome 5 Free 9'>{icon}</span>  {}",
-        "format-icons": [
-            ""
-        ],
-        "interval": 3600,
-        "escape": true,
-        "on-click": "~/.config/rofi/powermenu/type-1/powermenu.sh"
-    },
-    "custom/recorder": {
-        "format": "!",
-        "return-type": "json",
-        "interval": 3,
-        "exec": "echo '{\"class\": \"recording\"}'",
-        "exec-if": "pgrep wf-recorder",
-        "tooltip": false,
-        "on-click": "killall -s SIGINT wf-recorder"
-    },
-    "battery": {
-        "format": "<span font='Font Awesome 5 Free 11'>{icon}</span>   {capacity}%{time}",
-        "format-icons": [
-            "",
-            "",
-            "",
-            "",
-            ""
-        ],
-        "format-time": " ({H}h{M}m)",
-        "format-charging": "<span font='Font Awesome 5 Free'></span>  <span font='Font Awesome 5 Free 11'>{icon}</span>  {capacity}% - {time}",
-        "format-full": "<span font='Font Awesome 5 Free'></span>  <span font='Font Awesome 5 Free 11'>{icon}</span>  Charged",
-        "interval": 15,
-        "states": {
-            "warning": 25,
-            "critical": 10
-        },
-        "tooltip": false
-    },
-    "custom/disk": {
-        "return-type": "json",
-        "format": "<span font='Font Awesome 5 Free 11'>{icon}</span>   {text}",
-        "format-icons": [
-            ""
-        ],
-        "exec": "~/.config/waybar/modules/disk_usage.sh",
-        "interval": 30,
-        "tooltip": false
-    },
-    "network": {
-        "format": "{icon}",
-        "format-alt": "<span font='Font Awesome 5 Free 10'>︁</span> ︁{ipaddr}/{cidr} {icon}",
-        "format-alt-click": "click-left",
-        "format-wifi": "<span font='Font Awesome 5 Free 10'></span>   {essid} ({signalStrength}%)",
-        "format-ethernet": "<span font='Font Awesome 5 Free 10'>︁</span> {ifname}",
-        "format-disconnected": "⚠ Disconnected",
-        "tooltip": false
-    },
-    "pulseaudio": {
-        "format": "<span font='Font Awesome 5 Free 11'>{icon:2}</span>{volume}%",
-        "format-alt": "<span font='Font Awesome 5 Free 11'>{icon:2}</span>{volume}%",
-        "format-alt-click": "click-right",
-        "format-muted": "<span font='Font Awesome 5 Free 11'></span>",
-        "format-icons": {
-            "phone": [
-                " ",
-                " ",
-                " ",
-                " "
-            ],
-            "default": [
-                "",
-                "",
-                "",
-                ""
-            ]
-        },
-        "scroll-step": 2,
-        "on-click": "pavucontrol",
-        "tooltip": false
-    },
-    "backlight": {
-        "format": "{icon} {percent}%",
-        "format-alt": "{icon}",
-        "format-alt-click": "click-left",
-        "format-icons": [
-            "",
-            ""
-        ],
-        "on-scroll-up": "light -A 1",
-        "on-scroll-down": "light -U 1"
-    },
-    "temperature": {
-        "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
-        "critical-threshold": 75,
-        "interval": 5,
-        "format": "{icon} {temperatureC}°",
-        "tooltip": false,
-        "format-icons": [
-            "", // Icon: temperature-empty
-            "", // Icon: temperature-quarter
-            "", // Icon: temperature-half
-            "", // Icon: temperature-three-quarters
-            "" // Icon: temperature-full
-        ]
-    }
+    "on-click": "pavucontrol"
+  }
 }
