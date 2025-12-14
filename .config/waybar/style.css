@@ -7,8 +7,9 @@
 }
 
 window#waybar {
-  background: rgba(26, 27, 38, 0.7);
+  background: rgba(26, 27, 38, 0.75);
   color: #c0caf5;
+  /* border-bottom: 1px solid rgba(122, 162, 247, 0.12); */
 }
 
 #workspaces button {
@@ -27,16 +28,25 @@ window#waybar {
   background: rgba(36, 40, 59, 0.5);
 }
 
-#clock,
+#clock {
+  padding: 0 12px;
+  font-weight: 600;
+  color: #c0caf5;
+}
+
 #disk,
 #bluetooth,
 #network,
 #pulseaudio {
-  padding: 0 8px;
-  color: #a9b1d6;
+  padding: 0 10px;
+  transition: color 0.2s ease;
 }
 
-#bluetooth.connected {
+#disk {
+  color: #9ece6a;
+}
+
+#bluetooth {
   color: #7aa2f7;
 }
 
@@ -45,8 +55,16 @@ window#waybar {
   color: #565f89;
 }
 
+#network {
+  color: #7dcfff;
+}
+
 #network.disconnected {
   color: #565f89;
+}
+
+#pulseaudio {
+  color: #bb9af7;
 }
 
 #pulseaudio.muted {
