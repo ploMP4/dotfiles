@@ -22,7 +22,7 @@
     "sort-by-number": true
   },
   "clock": {
-    "format": "{:%H:%M}",
+    "format": "{:%a %d %b  %H:%M}",
     "tooltip-format": "{:%A, %B %d, %Y}"
   },
   "disk": {
