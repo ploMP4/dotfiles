@@ -14,7 +14,8 @@
     "disk",
     "bluetooth",
     "network",
-    "pulseaudio"
+    "pulseaudio",
+    "battery"
   ],
   "hyprland/workspaces": {
     "format": "{name}",
@@ -26,7 +27,7 @@
     "tooltip-format": "{:%A, %B %d, %Y}"
   },
   "disk": {
-    "format": "󰋊 {percentage_used}%",
+    "format": "󰆼 {percentage_used}%",
     "path": "/",
     "tooltip-format": "{used} / {total}"
   },
@@ -39,14 +40,14 @@
     "tooltip-format": "{status}"
   },
   "network": {
-    "format-wifi": "󰤨 {essid}",
-    "format-ethernet": "󰈀 {ifname}",
-    "format-disconnected": "󰤭",
+    "format-wifi": "󰖩 {essid}",
+    "format-ethernet": "󰈁 {ifname}",
+    "format-disconnected": "󰖪",
     "tooltip-format": "{ipaddr}"
   },
   "pulseaudio": {
     "format": "{icon} {volume}%",
-    "format-muted": "󰝟",
+    "format-muted": "󰖁",
     "format-icons": {
       "default": [
         "󰕿",
@@ -55,5 +56,15 @@
       ]
     },
     "on-click": "pavucontrol"
+  },
+  "battery": {
+    "format": "{icon} {capacity}%",
+    "format-charging": "󰂄 {capacity}%",
+    "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+    "states": {
+      "warning": 30,
+      "critical": 15
+    },
+    "tooltip-format": "{timeTo}"
   }
 }
