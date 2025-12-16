@@ -11,12 +11,17 @@
     "clock"
   ],
   "modules-right": [
+    // "tray",
     "disk",
     "bluetooth",
     "network",
     "pulseaudio",
     "battery"
   ],
+  // "tray": {
+  //   "icon-size": 16,
+  //   "spacing": 8
+  // },
   "hyprland/workspaces": {
     "format": "{name}",
     "on-click": "activate",
@@ -60,7 +65,19 @@
   "battery": {
     "format": "{icon} {capacity}%",
     "format-charging": "󰂄 {capacity}%",
-    "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+    "format-icons": [
+      "󰂎",
+      "󰁺",
+      "󰁻",
+      "󰁼",
+      "󰁽",
+      "󰁾",
+      "󰁿",
+      "󰂀",
+      "󰂁",
+      "󰂂",
+      "󰁹"
+    ],
     "states": {
       "warning": 30,
       "critical": 15
