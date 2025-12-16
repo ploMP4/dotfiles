@@ -1,6 +1,6 @@
-theme = tokyonight_night
+theme = TokyoNight Night
 font-family = Iosevka Nerd Font
-background-opacity = 0.92
+background-opacity = 0.80
 font-size = 20
 cursor-style = block
 cursor-style-blink = false
@@ -9,4 +9,4 @@ font-feature = -calt
 
 window-decoration = true
 gtk-titlebar = false
-gtk-adwaita = false
+keybind = shift+enter=text:\x1b\r
