@@ -10,7 +10,7 @@ mkdir -p "$CACHE_DIR"
 wallpapers=$(find "$WALLPAPER_DIR" -type f \( -name '*.mp4' -o -name '*.mkv' -o -name '*.webm' -o -name '*.avi' -o -name '*.gif' \) | sort)
 
 # Build options with thumbnails
-options=""
+options="󰒟 Shuffle\n"
 declare -A path_map
 while IFS= read -r path; do
     filename=$(basename "$path")
@@ -44,8 +44,15 @@ if [[ "$selected" == img:* ]]; then
     selected="${selected##*:text:}"
 fi
 
-# Get full path
-wallpaper_path="${path_map[$selected]}"
+# Handle shuffle selection
+if [[ "$selected" == "󰒟 Shuffle" ]]; then
+    mapfile -t wallpaper_array <<< "$wallpapers"
+    random_index=$((RANDOM % ${#wallpaper_array[@]}))
+    wallpaper_path="${wallpaper_array[$random_index]}"
+else
+    # Get full path
+    wallpaper_path="${path_map[$selected]}"
+fi
 
 pkill -o mpvpaper 
 sleep 0.2
