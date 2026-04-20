@@ -1,5 +1,5 @@
 return {
-	"romgrk/nvim-treesitter-context",
+	"nvim-treesitter/nvim-treesitter-context",
 	lazy = false,
 	config = function()
 		require("treesitter-context").setup({
