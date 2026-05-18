@@ -46,14 +46,11 @@ fi
 
 # Handle shuffle selection
 if [[ "$selected" == "󰒟 Shuffle" ]]; then
-    mapfile -t wallpaper_array <<< "$wallpapers"
-    random_index=$((RANDOM % ${#wallpaper_array[@]}))
-    wallpaper_path="${wallpaper_array[$random_index]}"
+    wallpaper_path="--rand"
 else
-    # Get full path
     wallpaper_path="${path_map[$selected]}"
 fi
 
-pkill -o mpvpaper 
+pkill -o phonto
 sleep 0.2
-mpvpaper -o "loop no-audio --panscan=1.0" ALL "$wallpaper_path" --fork
+/home/plo/sandbox/phonto/target/release/phonto $wallpaper_path
