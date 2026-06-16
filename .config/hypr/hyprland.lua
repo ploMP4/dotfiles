@@ -194,7 +194,9 @@ hl.bind(
 )
 hl.bind(mainMod .. "+ S", hl.dsp.exec_cmd("killall -SIGUSR1 waybar"))
 hl.bind(mainMod .. "+ B", hl.dsp.exec_cmd("~/.config/hypr/scripts/wallpaper-selector.sh"))
-hl.bind("SUPER_L", hl.dsp.exec_cmd("~/sandbox/stochos/target/release/stochos"))
+hl.bind("SUPER_L", hl.dsp.exec_cmd("~/sandbox/stochos/target/release/stochos --hint"))
+hl.bind("SHIFT + SUPER_L", hl.dsp.exec_cmd("~/sandbox/stochos/target/release/stochos"))
+hl.bind("CTRL + SUPER_L", hl.dsp.exec_cmd("~/sandbox/stochos/target/release/stochos --free"))
 
 hl.bind(mainMod .. "+ h", hl.dsp.focus({ direction = "left" }))
 hl.bind(mainMod .. "+ l", hl.dsp.focus({ direction = "right" }))
