@@ -22,13 +22,25 @@ ShellRoot {
         property color themeBg: "#16181f"
         property string current: ""
 
-        function choose(arg) {
-            Quickshell.execDetached(["bash", scripts + "/set-wallpaper.sh", arg]);
+        // "" = no shader, "RANDOM" = random shader, otherwise a .glsl path.
+        property string selectedShader: ""
+        function shaderArg() {
+            return selectedShader === "" ? "none"
+                 : selectedShader === "RANDOM" ? "--shuffle"
+                 : selectedShader;
+        }
+        function choose(wallpaperArg) {
+            Quickshell.execDetached(["bash", scripts + "/set-wallpaper.sh", wallpaperArg, shaderArg()]);
             Qt.quit();
         }
         function chooseCurrent() {
             if (grid.currentIndex >= 0 && grid.currentIndex < viewModel.count)
                 choose(viewModel.get(grid.currentIndex).video);
+        }
+        // Surprise me: random wallpaper + random shader, ignoring the selection.
+        function shuffleBoth() {
+            Quickshell.execDetached(["bash", scripts + "/set-wallpaper.sh", "--shuffle", "--shuffle"]);
+            Qt.quit();
         }
         function fuzzy(q, s) {
             let j = 0;
@@ -91,6 +103,24 @@ ShellRoot {
                         viewModel.append({ thumb: p[0], video: p[1], name: p[2] });
                         if (grid.currentIndex < 0) grid.currentIndex = 0;
                     }
+                }
+            }
+        }
+
+        // --- shader list (None / Random / each .glsl in phonto's shaders dir) ---
+        ListModel {
+            id: shaderModel
+            ListElement { sname: "None"; spath: "" }
+            ListElement { sname: "󰓞 Random"; spath: "RANDOM" }
+        }
+        Process {
+            command: ["bash", "-c", "find ~/.config/phonto/shaders -name '*.glsl' | sort"]
+            running: true
+            stdout: SplitParser {
+                onRead: line => {
+                    if (line.length === 0) return;
+                    const base = line.split("/").pop().replace(/\.glsl$/, "");
+                    shaderModel.append({ sname: base, spath: line });
                 }
             }
         }
@@ -170,13 +200,14 @@ ShellRoot {
                             onTextChanged: root.rebuild()
                             Text {
                                 anchors.fill: parent; verticalAlignment: Text.AlignVCenter
-                                text: "Search wallpapers…  (Ctrl+S to shuffle)"
+                                text: "Search wallpapers…  (Ctrl+S shuffle · Ctrl+R shuffle + shader)"
                                 color: "#80ffffff"; font: search.font
                                 visible: search.text.length === 0
                             }
                             Keys.onPressed: event => {
-                                if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_S) {
-                                    root.choose("--shuffle"); event.accepted = true; return;
+                                if (event.modifiers & Qt.ControlModifier) {
+                                    if (event.key === Qt.Key_S) { root.choose("--shuffle"); event.accepted = true; return; }
+                                    if (event.key === Qt.Key_R) { root.shuffleBoth(); event.accepted = true; return; }
                                 }
                                 switch (event.key) {
                                 case Qt.Key_Up:    grid.moveCurrentIndexUp();    event.accepted = true; break;
@@ -185,6 +216,13 @@ ShellRoot {
                                 case Qt.Key_Right: grid.moveCurrentIndexRight(); event.accepted = true; break;
                                 case Qt.Key_Return:
                                 case Qt.Key_Enter: root.chooseCurrent(); event.accepted = true; break;
+                                case Qt.Key_Tab: {  // cycle the selected shader
+                                    let i = 0;
+                                    for (let k = 0; k < shaderModel.count; k++)
+                                        if (shaderModel.get(k).spath === root.selectedShader) { i = k; break; }
+                                    root.selectedShader = shaderModel.get((i + 1) % shaderModel.count).spath;
+                                    event.accepted = true; break;
+                                }
                                 case Qt.Key_Escape:
                                     if (search.text.length > 0) search.text = ""; else Qt.quit();
                                     event.accepted = true; break;
@@ -282,6 +320,48 @@ ShellRoot {
                                 cursorShape: Qt.PointingHandCursor
                                 onEntered: grid.currentIndex = index
                                 onClicked: root.choose(model.video)
+                            }
+                        }
+                    }
+                }
+
+                // --- shader strip (applied to whatever wallpaper you pick) ---
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 10
+                    Text {
+                        text: "Shader"
+                        color: root.accent2
+                        font.pixelSize: 13
+                        font.bold: true
+                    }
+                    ListView {
+                        Layout.fillWidth: true
+                        height: 34
+                        orientation: ListView.Horizontal
+                        clip: true
+                        spacing: 8
+                        model: shaderModel
+                        delegate: Rectangle {
+                            required property var model
+                            readonly property bool active: model.spath === root.selectedShader
+                            height: 34
+                            width: chipText.implicitWidth + 24
+                            radius: 8
+                            color: active ? root.accent2 : "transparent"
+                            border.color: root.accent2
+                            border.width: 1
+                            Text {
+                                id: chipText
+                                anchors.centerIn: parent
+                                text: model.sname
+                                font.pixelSize: 12
+                                color: parent.active ? root.themeBg : root.accent2
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: root.selectedShader = model.spath
                             }
                         }
                     }
