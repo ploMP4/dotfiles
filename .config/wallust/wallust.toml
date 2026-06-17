@@ -1,0 +1,20 @@
+# wallust config — https://explosion-mental.codeberg.page/wallust/
+# Generates color palettes from images. A frame is extracted from the
+# (video) wallpaper by ~/.config/hypr/scripts/wallust-apply.sh first.
+
+# How the image is parsed. kmeans samples diverse colors across the frame.
+backend = "kmeans"
+# lchansi + ansidark16 keeps the 8 ANSI hues (so red stays red, green green, …)
+# while tinting them toward the wallpaper. This keeps terminal output readable
+# and is far more robust than image-only palettes on near-monochrome frames.
+colorspace = "lchansi"
+palette = "ansidark16"
+
+# Keep text readable against the generated background.
+check_contrast = true
+
+[templates]
+# Emit to a temp file (not the live ghostty include): wallust-apply.sh post-
+# processes it into ~/.config/ghostty/wallust and caches it per wallpaper. This
+# lets the cache be pre-warmed in the background without touching live colors.
+ghostty = { template = "ghostty", target = "~/.cache/wallust/raw.conf" }

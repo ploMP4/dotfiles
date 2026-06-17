@@ -1,0 +1,19 @@
+[[search_paths]]
+path = "/home/plo/dotfiles/wallpapers/animated/"
+depth = 1
+
+[[alias]]
+name = "external"
+wayland = "HDMI-A-1"
+
+[[alias]]
+name = "laptop"
+wayland = "eDP-1"
+
+[[display]]
+id = "external"
+random = true
+
+[[display]]
+id = "laptop"
+path = "~/dotfiles/wallpapers/animated/night-city.mp4"

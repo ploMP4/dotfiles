@@ -1,0 +1,26 @@
+[
+  {
+    "name": "test",
+    "actions": [
+      {
+        "Click": "afl"
+      },
+      {
+        "Click": "kac"
+      }
+    ],
+    "bind_key": "c"
+  },
+  {
+    "name": "asda",
+    "actions": [
+      {
+        "Drag": [
+          "sle",
+          "dle"
+        ]
+      }
+    ],
+    "bind_key": "a"
+  }
+]
