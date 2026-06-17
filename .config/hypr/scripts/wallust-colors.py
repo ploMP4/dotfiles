@@ -149,10 +149,18 @@ def main() -> None:
     m = re.search("background = " + HEX_RE, text)
     bg_hex = m.group(1) if m else "11121b"
     h, s = hue_sat(bg_hex)
-    s = min(max(s, SAT_MIN), SAT_MAX)
-    accent = hsl_hex(h, s, ACCENT_L)                              # primary
-    anchor = hsl_hex(h, s, ANCHOR_L)                              # brighter primary
-    accent2 = hsl_hex((h + SECOND_HUE_SHIFT) % 1.0, s, SECOND_L)  # secondary
+    if s < 0.10:
+        # Grayscale output (e.g. the edge-detect / emboss shaders): there is no
+        # real hue, so forcing saturation would invent a colour from noise (a
+        # red, since gray reads as hue 0). Use a neutral light accent instead.
+        accent = hsl_hex(0, 0, ACCENT_L + 0.06)
+        anchor = hsl_hex(0, 0, ANCHOR_L)
+        accent2 = hsl_hex(0, 0, ACCENT_L + 0.20)
+    else:
+        s = min(max(s, SAT_MIN), SAT_MAX)
+        accent = hsl_hex(h, s, ACCENT_L)                              # primary
+        anchor = hsl_hex(h, s, ANCHOR_L)                              # brighter primary
+        accent2 = hsl_hex((h + SECOND_HUE_SHIFT) % 1.0, s, SECOND_L)  # secondary
 
     # 3. Point ghostty's cursor at the accent too, then persist.
     text = re.sub("cursor-color = " + HEX_RE, "cursor-color = " + accent, text, count=1)

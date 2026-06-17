@@ -19,28 +19,36 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 CURRENT="$HOME/.cache/phonto/current"
 FRAME="$HOME/.cache/wallust/frame.png"
+DUMP="$HOME/.cache/wallust/dump.png"
 RAW="$HOME/.cache/wallust/raw.conf"
 PALETTE_CACHE="$HOME/.cache/wallust/palettes"
 WALLPAPER_DIR="$HOME/dotfiles/wallpapers/animated"
+PHONTO="/home/plo/sandbox/phonto/target/release/phonto"
 GHOSTTY_COLORS="$HOME/.config/ghostty/wallust"
 ACCENT_FILE="$HOME/.cache/wallust/accent"
 TMUX_COLORS="$HOME/.cache/wallust/tmux.conf"
 COLORS_PY="$HOME/.config/hypr/scripts/wallust-colors.py"
 mkdir -p "$(dirname "$FRAME")" "$PALETTE_CACHE"
 
-# Cache file holding wallust's raw output for a given wallpaper, keyed by path.
-cache_path() { printf '%s/%s' "$PALETTE_CACHE" "$(printf '%s' "$1" | md5sum | cut -d' ' -f1)"; }
+# Cache file holding wallust's raw output, keyed by wallpaper + shader (so each
+# shader produces its own palette).
+cache_path() { printf '%s/%s' "$PALETTE_CACHE" "$(printf '%s\037%s' "$1" "${2:-}" | md5sum | cut -d' ' -f1)"; }
 
-# Compute wallust's raw palette for SRC into the cache (frame extract + wallust),
-# unless already cached. Touches only $FRAME, $RAW and the cache — never the live
-# ghostty file — so it is safe to run in the background for pre-warming.
+# Compute wallust's raw palette for SRC (with optional SHADER) into the cache,
+# unless already cached. The frame is dumped by phonto itself — so the colours
+# reflect the actual on-screen output, shader included — then downscaled for a
+# fast wallust pass. Touches only $DUMP/$FRAME/$RAW and the cache, never the live
+# ghostty file, so it is safe to run in the background for pre-warming.
 build_cache() {
-    local src="$1" cache t generated=false
-    cache="$(cache_path "$src")"
+    local src="$1" shader="${2:-}" cache t generated=false
+    cache="$(cache_path "$src" "$shader")"
     [[ -f "$cache" ]] && return 0
-    ffmpeg -y -ss 00:00:02 -i "$src" -frames:v 1 -vf "scale=720:-1" "$FRAME" 2>/dev/null \
-      || ffmpeg -y -i "$src" -frames:v 1 -vf "scale=720:-1" "$FRAME" 2>/dev/null \
+    local shader_args=()
+    [[ -n "$shader" && -f "$shader" ]] && shader_args=(--shader "$shader")
+    "$PHONTO" dump --at 2 "${shader_args[@]}" --out "$DUMP" "$src" 2>/dev/null \
+      || "$PHONTO" dump --at 0 "${shader_args[@]}" --out "$DUMP" "$src" 2>/dev/null \
       || return 1
+    ffmpeg -y -i "$DUMP" -vf "scale=720:-1" "$FRAME" 2>/dev/null || cp "$DUMP" "$FRAME"
     # The threshold strongly affects which background wallust picks: a strict one
     # favours the salient tone, a low one collapses to the desaturated bulk colour
     # (e.g. forest green instead of cabin amber). Start strict, step down only if
@@ -73,12 +81,12 @@ resolve_src() {
 }
 
 # Compute the palette and write all the per-app colour files. No live reloads.
-# A previously-seen wallpaper is a cache hit, skipping ffmpeg + wallust.
+# A previously-seen wallpaper+shader is a cache hit, skipping phonto + wallust.
 generate() {
-    local src="$1" cache
+    local src="$1" shader="${2:-}" cache
     [[ -z "$src" ]] && { echo "wallust-apply: no wallpaper source found" >&2; return 1; }
-    cache="$(cache_path "$src")"
-    [[ -f "$cache" ]] || build_cache "$src" \
+    cache="$(cache_path "$src" "$shader")"
+    [[ -f "$cache" ]] || build_cache "$src" "$shader" \
         || { echo "wallust-apply: could not build palette from $src" >&2; return 1; }
     cp "$cache" "$GHOSTTY_COLORS"
     python3 "$COLORS_PY" 2>/dev/null || true
@@ -123,7 +131,7 @@ apply() {
 
 main() {
     case "${1:-}" in
-        --generate) [[ -n "${2:-}" ]] && generate "$2" ;;
+        --generate) [[ -n "${2:-}" ]] && generate "$2" "${3:-}" ;;
         --apply)    apply ;;
         --prewarm-all)
             # Background job at login: build only the missing cache entries;
