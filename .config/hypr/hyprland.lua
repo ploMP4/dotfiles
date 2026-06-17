@@ -4,15 +4,15 @@
 
 hl.monitor({
 	output = "eDP-1",
-	mode = "1920x1200@60",
+	mode = "1920x1080@60",
 	position = "0x0",
 	scale = 1,
-	disabled = true,
+	disabled = false,
 })
 
 hl.monitor({
 	output = "HDMI-A-1",
-	mode = "1920x1024@60",
+	mode = "1920x1080@60",
 	position = "0x0",
 	scale = 1,
 })
@@ -33,6 +33,10 @@ local menu = "wofi --show drun"
 hl.on("hyprland.start", function()
 	hl.exec_cmd("waybar")
 	hl.exec_cmd("/home/plo/sandbox/phonto/target/release/phonto --rand")
+	hl.exec_cmd("/home/plo/.config/hypr/scripts/wallust-apply.sh")
+	-- Warm the per-wallpaper color cache in the background so every MOD+B pick
+	-- is near-instant (skips ffmpeg + wallust).
+	hl.exec_cmd("nice -n 19 /home/plo/.config/hypr/scripts/wallust-apply.sh --prewarm-all")
 end)
 
 -------------------------------
@@ -53,6 +57,27 @@ hl.permission({ binary = "/usr/(lib|libexec|lib64)/xdg-desktop-portal-hyprland",
 ---- LOOK AND FEEL ----
 -----------------------
 
+-- Wallpaper-derived accent, written by ~/.config/hypr/scripts/wallust-apply.sh
+-- and refreshed via `hyprctl reload` on each wallpaper change. Falls back to a
+-- TokyoNight blue before the first run.
+local function wallust_accents()
+	local a, b = "#7aa2f7", "#9bbcff"
+	local f = io.open(os.getenv("HOME") .. "/.cache/wallust/accent", "r")
+	if f then
+		local l1 = f:read("l") -- primary accent
+		local l2 = f:read("l") -- secondary accent
+		f:close()
+		if l1 and l1:match("^#%x%x%x%x%x%x$") then
+			a = l1
+		end
+		if l2 and l2:match("^#%x%x%x%x%x%x$") then
+			b = l2
+		end
+	end
+	return "rgba(" .. a:sub(2) .. "ee)", "rgba(" .. b:sub(2) .. "ee)"
+end
+local accentBorder, accentBorder2 = wallust_accents()
+
 hl.config({
 	general = {
 		gaps_in = 5,
@@ -62,7 +87,7 @@ hl.config({
 
 		col = {
 			active_border = {
-				colors = { "rgba(33ccffee)", "rgba(00ff99ee)" },
+				colors = { accentBorder, accentBorder2 },
 				angle = 45,
 			},
 			inactive_border = "rgba(595959aa)",
@@ -70,7 +95,7 @@ hl.config({
 
 		resize_on_border = false,
 		allow_tearing = false,
-		layout = "dwindle",
+		layout = "scrolling",
 	},
 
 	decoration = {
@@ -117,11 +142,20 @@ hl.animation({ leaf = "fade", enabled = true, speed = 3.03, bezier = "quick" })
 hl.animation({ leaf = "layers", enabled = true, speed = 3.81, bezier = "easeOutQuint" })
 hl.animation({ leaf = "layersIn", enabled = true, speed = 4, bezier = "easeOutQuint", style = "fade" })
 hl.animation({ leaf = "layersOut", enabled = true, speed = 1.5, bezier = "linear", style = "fade" })
-hl.animation({ leaf = "fadeLayersIn", enabled = false, speed = 1.79, bezier = "almostLinear" })
-hl.animation({ leaf = "fadeLayersOut", enabled = false, speed = 1.39, bezier = "almostLinear" })
+hl.animation({ leaf = "fadeLayersIn", enabled = true, speed = 1.79, bezier = "almostLinear" })
+hl.animation({ leaf = "fadeLayersOut", enabled = true, speed = 1.39, bezier = "almostLinear" })
 hl.animation({ leaf = "workspaces", enabled = false, speed = 1.94, bezier = "almostLinear", style = "fade" })
 hl.animation({ leaf = "workspacesIn", enabled = false, 1.21, bezier = "almostLinear", style = "fade" })
 hl.animation({ leaf = "workspacesOut", enabled = false, 1.94, bezier = "almostLinear", style = "fade" })
+
+-- fadeLayers (the layer opacity fade) is global, which is what makes the phonto
+-- wallpaper crossfade work. Disable layer animations on the other layer-shell
+-- surfaces so the fade stays exclusive to the wallpaper (e.g. wofi popping in
+-- instantly instead of fading). Add more namespaces here if others fade.
+hl.layer_rule({ name = "no-fade-wofi", match = { namespace = "wofi" }, no_anim = true })
+hl.layer_rule({ name = "no-fade-waybar", match = { namespace = "waybar" }, no_anim = true })
+hl.layer_rule({ name = "no-fade-stochos", match = { namespace = "stochos" }, no_anim = true })
+hl.layer_rule({ name = "no-fade-picker", match = { namespace = "wallpaper-picker" }, no_anim = true })
 
 hl.config({
 	dwindle = {
@@ -193,10 +227,10 @@ hl.bind(
 	hl.dsp.exec_cmd('hyprshot -m region && notify-send "Screenshot saved to ~/$(date +"%Y-%m-%d-%T")-screenshot.png"')
 )
 hl.bind(mainMod .. "+ S", hl.dsp.exec_cmd("killall -SIGUSR1 waybar"))
-hl.bind(mainMod .. "+ B", hl.dsp.exec_cmd("~/.config/hypr/scripts/wallpaper-selector.sh"))
+hl.bind(mainMod .. "+ B", hl.dsp.exec_cmd("qs -c wallpaper -n"))
 hl.bind("SUPER_L", hl.dsp.exec_cmd("~/sandbox/stochos/target/release/stochos --hint"))
 hl.bind("SHIFT + SUPER_L", hl.dsp.exec_cmd("~/sandbox/stochos/target/release/stochos"))
-hl.bind("CTRL + SUPER_L", hl.dsp.exec_cmd("~/sandbox/stochos/target/release/stochos --free"))
+hl.bind("CONTROL + SUPER_L", hl.dsp.exec_cmd("~/sandbox/stochos/target/release/stochos --free"))
 
 hl.bind(mainMod .. "+ h", hl.dsp.focus({ direction = "left" }))
 hl.bind(mainMod .. "+ l", hl.dsp.focus({ direction = "right" }))

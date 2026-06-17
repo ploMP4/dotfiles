@@ -4,8 +4,14 @@ depth = 3
 
 [[search_dirs]]
 path = "~/sandbox"
-depth = 3
+depth = 2
 
 [[search_dirs]]
 path = "~/"
 depth = 1
+
+[picker_colors]
+highlight_color = "#7DA0CA"
+border_color = "#7DA0CA"
+info_color = "#92C7D3"
+prompt_color = "#7DA0CA"

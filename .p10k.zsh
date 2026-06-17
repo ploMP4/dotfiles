@@ -31,7 +31,7 @@
   # The list of segments shown on the left. Fill it with the most important segments.
   typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
     # =========================[ Line #1 ]=========================
-    os_icon                 # os identifier
+    # os_icon                 # os identifier
     dir                     # current directory
     vcs                     # git status
     # =========================[ Line #2 ]=========================
@@ -374,9 +374,9 @@
       # Styling for up-to-date Git status.
       local       meta='%f'     # default foreground
       # local      clean='%164F'  # purple foreground
-      local       clean='%F{#7aa2f7}'  # tokyo night blue
-      local   modified='%178F'  # yellow foreground
-      local  untracked='%39F'   # blue foreground
+      local       clean="%F{${WALLUST_ACCENT2:-#9bbcff}}"  # secondary accent, distinct from the path
+      local   modified='%178F'  # yellow foreground (kept distinct so a dirty repo stands out)
+      local  untracked="%F{${WALLUST_ACCENT2:-#9bbcff}}"   # secondary accent, distinct from the path
       local conflicted='%196F'  # red foreground
     else
       # Styling for incomplete and stale Git status.
