@@ -1,3 +1,4 @@
+#version 300 es
 // Kuwahara oil-painting filter. Samples 4 overlapping windows around each
 // pixel and outputs the mean of the one with the lowest variance — smooths
 // flat regions while sharpening edges, making video look painted.
@@ -5,7 +6,8 @@
 precision mediump float;
 uniform sampler2D u_tex;
 uniform vec2 u_resolution;
-varying vec2 v_uv;
+in vec2 v_uv;
+out vec4 frag_color;
 
 const int RADIUS = 3;
 
@@ -18,25 +20,25 @@ void main() {
 
     for (int x = -RADIUS; x <= 0; x++) {
         for (int y = -RADIUS; y <= 0; y++) {
-            vec3 c = texture2D(u_tex, v_uv + vec2(float(x), float(y)) * px).rgb;
+            vec3 c = texture(u_tex, v_uv + vec2(float(x), float(y)) * px).rgb;
             m0 += c; s0 += c * c;
         }
     }
     for (int x = 0; x <= RADIUS; x++) {
         for (int y = -RADIUS; y <= 0; y++) {
-            vec3 c = texture2D(u_tex, v_uv + vec2(float(x), float(y)) * px).rgb;
+            vec3 c = texture(u_tex, v_uv + vec2(float(x), float(y)) * px).rgb;
             m1 += c; s1 += c * c;
         }
     }
     for (int x = -RADIUS; x <= 0; x++) {
         for (int y = 0; y <= RADIUS; y++) {
-            vec3 c = texture2D(u_tex, v_uv + vec2(float(x), float(y)) * px).rgb;
+            vec3 c = texture(u_tex, v_uv + vec2(float(x), float(y)) * px).rgb;
             m2 += c; s2 += c * c;
         }
     }
     for (int x = 0; x <= RADIUS; x++) {
         for (int y = 0; y <= RADIUS; y++) {
-            vec3 c = texture2D(u_tex, v_uv + vec2(float(x), float(y)) * px).rgb;
+            vec3 c = texture(u_tex, v_uv + vec2(float(x), float(y)) * px).rgb;
             m3 += c; s3 += c * c;
         }
     }
@@ -57,5 +59,5 @@ void main() {
     if (v2 < minV) { minV = v2; result = m2; }
     if (v3 < minV) {             result = m3; }
 
-    gl_FragColor = vec4(result, 1.0);
+    frag_color = vec4(result, 1.0);
 }

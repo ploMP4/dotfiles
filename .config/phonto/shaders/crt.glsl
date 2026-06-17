@@ -1,8 +1,10 @@
+#version 300 es
 // CRT effect: scanlines, slight barrel distortion, and phosphor vignette.
 precision mediump float;
 uniform sampler2D u_tex;
 uniform vec2 u_resolution;
-varying vec2 v_uv;
+in vec2 v_uv;
+out vec4 frag_color;
 
 const float SCANLINE_INTENSITY = 0.15;  // 0.0 = none, 0.3 = heavy
 const float BARREL = 0.08;             // barrel distortion amount
@@ -19,11 +21,11 @@ void main() {
 
     // kill pixels outside the distorted frame
     if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
-        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+        frag_color = vec4(0.0, 0.0, 0.0, 1.0);
         return;
     }
 
-    vec3 col = texture2D(u_tex, uv).rgb;
+    vec3 col = texture(u_tex, uv).rgb;
 
     // scanlines based on screen pixel row
     float line = mod(uv.y * u_resolution.y, 2.0);
@@ -35,5 +37,5 @@ void main() {
     float v = pow(vig.x * vig.y * 16.0, VIGNETTE);
     col *= v;
 
-    gl_FragColor = vec4(col, 1.0);
+    frag_color = vec4(col, 1.0);
 }

@@ -1,8 +1,10 @@
+#version 300 es
 // Thermal camera / heat map. Remaps luminance through a classic
 // black → blue → cyan → green → yellow → red → white palette.
 precision mediump float;
 uniform sampler2D u_tex;
-varying vec2 v_uv;
+in vec2 v_uv;
+out vec4 frag_color;
 
 vec3 thermal(float t) {
     t = clamp(t, 0.0, 1.0);
@@ -20,7 +22,7 @@ vec3 thermal(float t) {
 }
 
 void main() {
-    vec3 col = texture2D(u_tex, v_uv).rgb;
+    vec3 col = texture(u_tex, v_uv).rgb;
     float luma = dot(col, vec3(0.299, 0.587, 0.114));
-    gl_FragColor = vec4(thermal(luma), 1.0);
+    frag_color = vec4(thermal(luma), 1.0);
 }
