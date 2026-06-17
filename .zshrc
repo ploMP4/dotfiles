@@ -157,7 +157,11 @@ alias nix-shell="nix-shell --run zsh"
 [[ ! -f ~/.cache/wallust/p10k-accent.zsh ]] || source ~/.cache/wallust/p10k-accent.zsh
 
 # Live-refresh that accent without opening a new shell: each prompt, if the file
-# changed (i.e. the wallpaper changed), re-source it and reload p10k.
+# changed (i.e. the wallpaper changed), re-source it. The git segment reads
+# $WALLUST_ACCENT2 per render so it updates on the next prompt; the directory /
+# prompt-char colours update in newly-opened shells. We deliberately do NOT call
+# `p10k reload` here — restarting gitstatus from inside a precmd hook trips
+# "gitstatus_stop_p9k_: No handler installed for fd ...".
 _wallust_accent_src=~/.cache/wallust/p10k-accent.zsh
 [[ -f $_wallust_accent_src ]] && _wallust_accent_mtime=$(stat -c %.Y "$_wallust_accent_src" 2>/dev/null)
 _wallust_refresh_accent() {
@@ -166,7 +170,6 @@ _wallust_refresh_accent() {
   [[ $m == ${_wallust_accent_mtime:-} ]] && return
   _wallust_accent_mtime=$m
   source $_wallust_accent_src
-  (( $+functions[p10k] )) && p10k reload
 }
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd _wallust_refresh_accent
