@@ -113,9 +113,12 @@ local function apply(c)
 	-- Editor base
 	hi("Normal",         { fg = c.fg,       bg = c.bg })
 	hi("NormalNC",       { fg = c.fg,       bg = c.bg })
-	hi("NormalFloat",    { fg = c.fg,       bg = c.bg1 })
-	hi("FloatBorder",    { fg = c.bg4,      bg = c.bg1 })
-	hi("FloatTitle",     { fg = c.ice,      bg = c.bg1 })
+	-- Floats follow Normal, so a transparent background stays transparent
+	-- inside them instead of turning into an opaque panel.
+	hi("NormalFloat",    { fg = c.fg,       bg = c.bg })
+	hi("FloatBorder",    { fg = c.bg4,      bg = c.bg })
+	hi("FloatTitle",     { fg = c.ice,      bg = c.bg })
+	hi("FloatFooter",    { fg = c.bg4,      bg = c.bg })
 	hi("EndOfBuffer",    { fg = c.bg2,      bg = c.bg })
 
 	-- Line numbers / cursor
@@ -172,10 +175,18 @@ local function apply(c)
 	hi("Question",       { fg = c.ice })
 
 	-- Diff
-	hi("DiffAdd",        { fg = c.teal,     bg = c.bg2 })
-	hi("DiffChange",     { fg = c.sky,      bg = c.bg2 })
-	hi("DiffDelete",     { fg = c.steel,    bg = c.bg2 })
-	hi("DiffText",       { fg = c.ice,      bg = c.bg3 })
+	-- Diffs need to be told apart at a glance, so these do not share one
+	-- background the way the rest of the UI groups do: added is green,
+	-- removed is red, changed is blue.
+	-- Backgrounds only, so syntax highlighting still shows through a diff
+	-- rather than every added line turning one flat colour. DiffChange stays
+	-- quiet — in a two-pane diff most lines are "changed", and a loud colour
+	-- there washes the whole pane out — while DiffText marks what actually
+	-- differs. DiffDelete needs a foreground: it also paints filler lines.
+	hi("DiffAdd",        { bg = "#16281f" })
+	hi("DiffChange",     { bg = "#1a2130" })
+	hi("DiffDelete",     { fg = c.red,     bg = "#2e1b23" })
+	hi("DiffText",       { bg = "#2c4a3a" })
 	hi("Added",          { fg = c.teal })
 	hi("Changed",        { fg = c.sky })
 	hi("Removed",        { fg = c.steel })
