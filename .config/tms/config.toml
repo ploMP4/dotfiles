@@ -1,17 +1,29 @@
 [[search_dirs]]
-path = "~/Documents"
+path = "/home/plo/wms"
 depth = 3
 
 [[search_dirs]]
-path = "~/sandbox"
+path = "/home/plo/giaola_11888"
+depth = 1
+
+[[search_dirs]]
+path = "/home/plo/giaola_genie"
+depth = 1
+
+[[search_dirs]]
+path = "/home/plo/giaola_11888_app"
+depth = 1
+
+[[search_dirs]]
+path = "/home/plo/sandbox"
 depth = 2
 
 [[search_dirs]]
-path = "~/"
+path = "/home/plo/11888-platform"
 depth = 1
 
 [picker_colors]
-highlight_color = "#7DA0CA"
-border_color = "#7DA0CA"
-info_color = "#92C7D3"
-prompt_color = "#7DA0CA"
+highlight_color = "#7D9FCA"
+border_color = "#7D9FCA"
+info_color = "#92C6D3"
+prompt_color = "#7D9FCA"

@@ -2,6 +2,23 @@ return {
 	"tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
 
 	{
+		"noby-y/oil-xdg-filechooser.nvim",
+		lazy = false,
+		dependencies = { "stevearc/oil.nvim" }, -- both plugins work
+		-- dependencies = { 'barrettruth/canola.nvim' },
+		opts = {},
+	},
+
+	{
+		"ploMP4/draven.nvim",
+		cmd = { "Draven", "DravenToggle", "DravenStatus" },
+		keys = {
+			{ "<leader>ro", "<cmd>Draven<cr>", desc = "[R]eview [O]pen" },
+		},
+		opts = {},
+	},
+
+	{
 		"numToStr/Comment.nvim",
 		opts = {
 			toggler = {

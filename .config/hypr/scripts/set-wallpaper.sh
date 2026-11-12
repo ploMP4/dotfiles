@@ -11,7 +11,7 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 WALLPAPER_DIR="$HOME/dotfiles/wallpapers/animated"
 SHADER_DIR="$HOME/.config/phonto/shaders"
-PHONTO="/home/plo/sandbox/phonto/target/release/phonto"
+PHONTO="phonto"
 APPLY="$HOME/.config/hypr/scripts/wallust-apply.sh"
 
 target="${1:-}"

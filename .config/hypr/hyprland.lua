@@ -7,7 +7,7 @@ hl.monitor({
 	mode = "1920x1080@60",
 	position = "0x0",
 	scale = 1,
-	disabled = false,
+	disabled = true,
 })
 
 hl.monitor({
@@ -32,7 +32,7 @@ local menu = "wofi --show drun"
 
 hl.on("hyprland.start", function()
 	hl.exec_cmd("waybar")
-	hl.exec_cmd("/home/plo/sandbox/phonto/target/release/phonto --rand")
+	hl.exec_cmd("phonto --rand")
 	hl.exec_cmd("/home/plo/.config/hypr/scripts/wallust-apply.sh")
 	-- Warm the per-wallpaper color cache in the background so every MOD+B pick
 	-- is near-instant (skips ffmpeg + wallust).
@@ -139,6 +139,10 @@ hl.animation({ leaf = "windowsOut", enabled = true, speed = 1.49, bezier = "quic
 hl.animation({ leaf = "fadeIn", enabled = true, speed = 1.73, bezier = "quick" })
 hl.animation({ leaf = "fadeOut", enabled = true, speed = 1.46, bezier = "quick" })
 hl.animation({ leaf = "fade", enabled = true, speed = 3.03, bezier = "quick" })
+-- fadeSwitch drives the crossfade when switching group tabs (and the
+-- active/inactive opacity fade on focus change — same leaf, not separable).
+-- Disabled so tab switching is instant.
+hl.animation({ leaf = "fadeSwitch", enabled = false })
 hl.animation({ leaf = "layers", enabled = true, speed = 3.81, bezier = "easeOutQuint" })
 hl.animation({ leaf = "layersIn", enabled = true, speed = 4, bezier = "easeOutQuint", style = "fade" })
 hl.animation({ leaf = "layersOut", enabled = true, speed = 1.5, bezier = "linear", style = "fade" })
@@ -180,6 +184,14 @@ hl.config({
 		force_default_wallpaper = 1,
 		disable_hyprland_logo = true,
 		session_lock_xray = true,
+	},
+})
+
+-- MOD+h/l cycle through a group's tabs before focus leaves the group, so the
+-- same binds handle both tab switching and directional focus.
+hl.config({
+	binds = {
+		movefocus_cycles_groupfirst = true,
 	},
 })
 
@@ -228,19 +240,27 @@ hl.bind(
 )
 hl.bind(mainMod .. "+ S", hl.dsp.exec_cmd("killall -SIGUSR1 waybar"))
 hl.bind(mainMod .. "+ B", hl.dsp.exec_cmd("qs -c wallpaper -n"))
-hl.bind("SUPER_L", hl.dsp.exec_cmd("~/sandbox/stochos/target/release/stochos --hint"))
-hl.bind("SHIFT + SUPER_L", hl.dsp.exec_cmd("~/sandbox/stochos/target/release/stochos"))
-hl.bind("CONTROL + SUPER_L", hl.dsp.exec_cmd("~/sandbox/stochos/target/release/stochos --free"))
+hl.bind("SUPER_L", hl.dsp.exec_cmd("stochos --hint"))
+hl.bind("SHIFT + SUPER_L", hl.dsp.exec_cmd("stochos"))
+hl.bind("CONTROL + SUPER_L", hl.dsp.exec_cmd("stochos --free"))
+
+hl.bind(mainMod .. "+ Z", hl.dsp.exec_cmd("~/sandbox/woomer/target/release/woomer"))
 
 hl.bind(mainMod .. "+ h", hl.dsp.focus({ direction = "left" }))
 hl.bind(mainMod .. "+ l", hl.dsp.focus({ direction = "right" }))
 hl.bind(mainMod .. "+ k", hl.dsp.focus({ direction = "up" }))
 hl.bind(mainMod .. "+ j", hl.dsp.focus({ direction = "down" }))
 
-hl.bind(mainMod .. "+ SHIFT + h", hl.dsp.window.move({ direction = "left" }))
-hl.bind(mainMod .. "+ SHIFT + l", hl.dsp.window.move({ direction = "right" }))
-hl.bind(mainMod .. "+ SHIFT + k", hl.dsp.window.move({ direction = "up" }))
-hl.bind(mainMod .. "+ SHIFT + j", hl.dsp.window.move({ direction = "down" }))
+-- group_aware: moving toward a group merges the window into it; moving a
+-- grouped window toward anything else splits it back out. Plain move otherwise.
+hl.bind(mainMod .. "+ SHIFT + h", hl.dsp.window.move({ direction = "left", group_aware = true }))
+hl.bind(mainMod .. "+ SHIFT + l", hl.dsp.window.move({ direction = "right", group_aware = true }))
+hl.bind(mainMod .. "+ SHIFT + k", hl.dsp.window.move({ direction = "up", group_aware = true }))
+hl.bind(mainMod .. "+ SHIFT + j", hl.dsp.window.move({ direction = "down", group_aware = true }))
+
+-- Group (tab) operations live on the CONTROL layer.
+hl.bind(mainMod .. "+ CONTROL + h", hl.dsp.group.move_window({ forward = false }))
+hl.bind(mainMod .. "+ CONTROL + l", hl.dsp.group.move_window({ forward = true }))
 
 for i = 1, 10 do
 	local key = (i == 1 and 7)
@@ -253,6 +273,7 @@ for i = 1, 10 do
 
 	hl.bind(mainMod .. " + " .. key, hl.dsp.focus({ workspace = i }))
 	hl.bind(mainMod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }))
+	hl.bind(mainMod .. " + CONTROL + " .. key, hl.dsp.group.active({ index = i }))
 end
 
 hl.bind(mainMod .. "+ mouse_down", hl.dsp.focus({ workspace = "e+1" }))
@@ -319,6 +340,17 @@ hl.window_rule({
 	name = "thunderbird-on-workspace-4",
 	match = { title = "^(.*Thunderbird.*)" },
 	move = "workspace 4",
+})
+
+-- File dialog served by oil-xdg-filechooser.nvim (terminal spawned with
+-- class `oil-filechooser`): float it and centre it like a dialog.
+hl.window_rule({
+	name = "oil-filechooser",
+	match = { class = "^(oil-filechooser)$" },
+
+	float = true,
+	size = "(monitor_w*0.8) (monitor_h*0.8)",
+	move = "(monitor_w*0.1) (monitor_h*0.1)",
 })
 
 hl.bind(

@@ -8,8 +8,19 @@ return {
 				preset = "right",
 			},
 		},
+		zen = {
+			toggles = { dim = false }, -- the default (true) fades everything outside the current section
+			win = { width = 90 }, -- includes number/sign columns, so ~84 chars of text
+		},
 	},
 	keys = {
+		{
+			"<leader>z",
+			function()
+				Snacks.zen()
+			end,
+			desc = "[Z]en mode",
+		},
 		{
 			"<leader>fh",
 			function()

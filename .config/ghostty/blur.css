@@ -1,0 +1,5 @@
+/* GTK 4.24+ needs a blur request through ext-background-effect-v1.
+ * Hyprland still controls the blur strength via decoration.blur. */
+window {
+    backdrop-filter: blur(20px);
+}

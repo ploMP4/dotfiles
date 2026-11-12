@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PHONTO=/home/plo/sandbox/phonto/target/release/phonto
+PHONTO=phonto
 CURRENT=$HOME/.cache/phonto/current
 
 WALLPAPER=$(cat "$CURRENT" 2>/dev/null)

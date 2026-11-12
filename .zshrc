@@ -148,6 +148,8 @@ alias grep="rg"
 alias clx="clx -n"
 alias lg="lazygit"
 alias nix-shell="nix-shell --run zsh"
+alias codex="codex --sandbox read-only --ask-for-approval on-request"
+alias feat="$HOME/dotfiles/feat.py"
 # alias debugpy="~/.local/share/nvim/mason/bin/debugpy"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
