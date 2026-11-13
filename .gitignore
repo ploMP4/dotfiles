@@ -6,3 +6,22 @@ lazy-lock.json
 .config/ghostty/wallust
 .config/wofi/style.css
 .config/waybar/style.css
+
+# Herdr: ~/.config/herdr-app is this folder (stow-folded, so Herdr's live
+# reload sees edits). Herdr writes its own files here (AGENTS.md, typings,
+# shipped layouts/mods, state, the wallust theme); track only mine.
+.config/herdr-app/*
+!.config/herdr-app/settings.json
+!.config/herdr-app/keys.json
+!.config/herdr-app/layouts/
+.config/herdr-app/layouts/*
+!.config/herdr-app/layouts/dots.json
+!.config/herdr-app/layouts/dots.svg
+!.config/herdr-app/layouts/dots-sidebar.json
+!.config/herdr-app/layouts/dots-sidebar.svg
+!.config/herdr-app/mods/
+.config/herdr-app/mods/*
+!.config/herdr-app/mods/dots-bar/
+!.config/herdr-app/mods/switch/
+.config/herdr-app/mods/*/gpui-kit.d.ts
+.config/herdr-app/mods/*/jsconfig.json

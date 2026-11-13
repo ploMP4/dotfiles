@@ -1,0 +1,130 @@
+{
+  "id": "root",
+  "type": "column",
+  "children": [
+    {
+      "id": "bar",
+      "type": "block",
+      "content": {
+        "mod": "dots-bar"
+      },
+      "size": {
+        "px": 36
+      },
+      "window_drag": true
+    },
+    {
+      "id": "body",
+      "type": "row",
+      "children": [
+        {
+          "id": "sidebar",
+          "type": "column",
+          "children": [
+            {
+              "id": "spaces",
+              "type": "block",
+              "content": {
+                "mod": "spaces"
+              }
+            },
+            {
+              "id": "agents",
+              "type": "block",
+              "content": {
+                "mod": "agents"
+              }
+            }
+          ],
+          "size": {
+            "px": 250
+          },
+          "min": 44,
+          "max": 480,
+          "hidden": true,
+          "background": "chrome",
+          "border": {
+            "width": 1,
+            "color": "border"
+          },
+          "radius": 4,
+          "divider": {
+            "width": 1,
+            "color": "border"
+          }
+        },
+        {
+          "id": "main",
+          "type": "block",
+          "content": {
+            "tab": "active",
+            "pane": {
+              "background": "background",
+              "border": {
+                "width": 1,
+                "color": "border"
+              },
+              "focus": {
+                "width": 1,
+                "color": "accent"
+              },
+              "radius": 6,
+              "gap": 6
+            }
+          }
+        },
+        {
+          "id": "panel",
+          "type": "column",
+          "children": [
+            {
+              "id": "panel-body",
+              "type": "stack",
+              "children": [
+                {
+                  "id": "files",
+                  "type": "block",
+                  "content": {
+                    "mod": "files"
+                  }
+                },
+                {
+                  "id": "changes",
+                  "type": "block",
+                  "content": {
+                    "mod": "changes"
+                  }
+                }
+              ],
+              "active": "files",
+              "header": {
+                "content": "tabs"
+              }
+            }
+          ],
+          "size": {
+            "px": 380
+          },
+          "min": 280,
+          "max": 900,
+          "hidden": true,
+          "background": "chrome",
+          "border": {
+            "width": 1,
+            "color": "border"
+          },
+          "radius": 4
+        }
+      ],
+      "padding": 4,
+      "gap": 5
+    }
+  ],
+  "background": "background",
+  "terminal_padding": [
+    6,
+    8
+  ],
+  "titlebar": "none",
+  "preview": "layouts/dots.svg"
+}

@@ -1,0 +1,13 @@
+{
+  "zoom": 1.0,
+  "sounds": {
+    "enabled": true
+  },
+  "font": "ZedMono Nerd Font",
+  "font_size": 17.0,
+  "font_ligatures": false,
+  "ui_font": "SF Pro",
+  "telemetry": false,
+  "minimum_contrast": 1.0,
+  "theme": "wallust"
+}
