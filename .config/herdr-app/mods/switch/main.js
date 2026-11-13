@@ -5,18 +5,24 @@
 //   Agents    (prefix w)    every agent, the ones with something to tell you
 //                           first: needs you > finished > working > idle;
 //                           the preview shows what it's saying.
-//   Projects  (prefix C-o)  git repos under ~/.config/tms/config.toml's
-//                           search_dirs (each to its depth, like tms): Enter
-//                           goes to the space already there, or opens one.
-//                           The preview shows git status and recent commits.
+//   Projects  (prefix C-o)  git repos under each machine's own
+//                           ~/.config/tms/config.toml search_dirs (each to
+//                           its depth, like tms; no config: its home, 2 deep).
+//                           Enter goes to the space already there, or opens
+//                           one on that machine. The preview shows git status
+//                           and recent commits.
+//
+// Every machine connected to Herdr is included: spaces and agents on another
+// machine carry a small tag with its name, and its repos are scanned there.
 //
 // props.mode picks the first mode ("spaces" by default); Tab / Shift-Tab cycle.
-// Type to filter; ↑/↓ or ctrl-n/ctrl-p (ctrl-j/ctrl-k) to move; Enter to go;
-// Esc to leave. The preview is plain text (`hc read`), refreshed every second.
+// Type to filter (machine names too); ↑/↓ or ctrl-n/ctrl-p (ctrl-j/ctrl-k) to
+// move; Enter to go; Esc to leave. The preview is plain text (`hc read`),
+// refreshed every second.
 
 import { View, div, svg, image } from "gpui-kit";
 import { v_flex, h_flex, InputState, Input, ScrollHandle } from "gpui-base";
-import { spaces, panes, agents, run, exec, hc, home, readTextFile, theme, settings, props, closeOverlay } from "herdr";
+import { spaces, panes, agents, machines, run, exec, hc, home, readTextFile, theme, settings, props, closeOverlay } from "herdr";
 
 const MODES = ["spaces", "agents", "projects"];
 const TITLE = { spaces: "Spaces", agents: "Agents", projects: "Projects" };
@@ -80,8 +86,9 @@ function shownTerminal(space) {
 export default class Switch extends View {
   init(_props, cx) {
     this.mode = MODES.includes(props()?.mode) ? props().mode : "spaces";
-    this.repos = null;
-    this.error = null;
+    this.repos = [];
+    this.scanning = 0;
+    this.unreachable = [];
     this.filter = "";
     this.at = null;
     this.preview = { key: null, lines: null };
@@ -98,15 +105,30 @@ export default class Switch extends View {
     cx.timer.after(600, () => this.input.focus());
     // Live-ish preview: reread the selected terminal every second while open.
     cx.timer.every(1000, (cx) => this.refresh(cx, true));
-    cx.spawn(async (cx) => {
-      try {
-        await this.scan();
-      } catch (e) {
-        this.error = String(e?.message ?? e);
-      }
-      this.refresh(cx);
-    });
+    this.startScan(cx);
     this.refresh(cx);
+  }
+
+  // Scan every reachable machine at once; each one's repos show up as it answers.
+  startScan(cx) {
+    const list = machines();
+    const names = list.some((m) => m.name === null) ? list : [{ name: null, layout: "ready" }, ...list];
+    for (const m of names) {
+      if (m.name && m.layout === "unavailable") {
+        this.unreachable.push(m.name);
+        continue;
+      }
+      this.scanning++;
+      cx.spawn(async (cx) => {
+        try {
+          this.repos.push(...(await this.scanMachine(m.name)));
+        } catch {
+          this.unreachable.push(m.name ?? "this computer");
+        }
+        this.scanning--;
+        this.refresh(cx);
+      });
+    }
   }
 
   cycle(d, cx) {
@@ -116,27 +138,36 @@ export default class Switch extends View {
     this.refresh(cx);
   }
 
-  async scan() {
-    const h = home();
-    const dirs = searchDirs(await readTextFile(`${h}/.config/tms/config.toml`), h);
+  // One machine's repos (null: this computer), found with its own tms config.
+  // `find -print` + dropping "/.git" rather than GNU-only -printf, so macOS
+  // and BSD machines work too.
+  async scanMachine(machine) {
+    const on = machine ? { on: machine } : {};
+    let h = home();
+    if (machine) {
+      const r = await exec("sh", ["-c", 'printf %s "$HOME"'], { ...on, timeout: 10000 });
+      h = r.stdout.trim();
+      if (r.code !== 0 || !h) throw new Error(`no home on ${machine}`);
+    }
+    const dirs = searchDirs(await readTextFile(`${h}/.config/tms/config.toml`, on).catch(() => null), h);
     const prune = SKIP.flatMap((n, i) => (i ? ["-o", "-name", n] : ["-name", n]));
     const found = await Promise.all(
       dirs.map((d) =>
-        exec("find", [d.path, "-maxdepth", String(d.depth + 1), "(", ...prune, ")", "-prune", "-o", "-name", ".git", "-printf", "%h\\n", "-prune"], { timeout: 15000 })
-          .then((r) => r.stdout.split("\n").filter(Boolean))
+        exec("find", [d.path, "-maxdepth", String(d.depth + 1), "(", ...prune, ")", "-prune", "-o", "-name", ".git", "-print", "-prune"], { ...on, timeout: 15000 })
+          .then((r) => r.stdout.split("\n").filter(Boolean).map((p) => p.replace(/\/\.git$/, "")))
           .catch(() => []),
       ),
     );
     const seen = new Set();
-    this.repos = found
+    return found
       .flat()
       .filter((p) => !seen.has(p) && seen.add(p))
-      .map((path) => ({ path, name: path.split("/").pop(), where: tilde(path, h) }));
+      .map((path) => ({ machine, path, name: path.split("/").pop(), where: tilde(path, h) }));
   }
 
-  // The space already in this repo: one started there, else one with a terminal inside it.
-  spaceFor(path) {
-    const list = spaces().filter((s) => !s.machine);
+  // The space already in this repo on that machine: one started there, else one with a terminal inside it.
+  spaceFor(path, machine = null) {
+    const list = spaces().filter((s) => (s.machine ?? null) === machine);
     const inside = (cwd) => cwd === path || cwd?.startsWith(path + "/");
     return (
       list.find((s) => s.folder === path) ??
@@ -147,22 +178,36 @@ export default class Switch extends View {
   rows() {
     const q = this.filter.trim().toLowerCase();
     if (this.mode === "spaces") {
+      // Herdr's order already puts this computer first, then machines by name.
       return spaces()
-        .map((s) => ({ kind: "space", space: s, score: score(q, s.name) }))
+        .map((s) => ({ kind: "space", space: s, machine: s.machine, score: score(q, s.name, s.machine ?? "") }))
         .filter((r) => r.score !== null)
         .sort((a, b) => a.score - b.score);
     }
     if (this.mode === "agents") {
-      const tabs = new Map(spaces().flatMap((s) => s.tabs.map((c) => [c.id, c])));
+      const list = spaces();
+      const tabs = new Map(list.flatMap((s) => s.tabs.map((c) => [c.id, c])));
+      const machineOf = new Map(list.map((s) => [s.id, s.machine]));
       return agents()
-        .map((a) => ({ kind: "agent", agent: a, since: tabs.get(a.tab)?.working_since, score: score(q, a.program?.name ?? "", `${a.space_name} ${a.tab_name} ${a.title}`) }))
+        .map((a) => {
+          const machine = machineOf.get(a.space) ?? null;
+          return {
+            kind: "agent",
+            agent: a,
+            machine,
+            since: tabs.get(a.tab)?.working_since,
+            score: score(q, a.program?.name ?? "", `${a.space_name} ${a.tab_name} ${a.title} ${machine ?? ""}`),
+          };
+        })
         .filter((r) => r.score !== null)
         .sort((x, y) => x.score - y.score || RANK[x.agent.status] - RANK[y.agent.status] || y.agent.pinned - x.agent.pinned || y.agent.seq - x.agent.seq);
     }
-    return (this.repos ?? [])
-      .map((r) => ({ kind: "repo", ...r, space: this.spaceFor(r.path), score: score(q, r.name, r.where) }))
+    // This computer's repos first, then each machine's by name.
+    const order = (m) => (m ? `1${m}` : "0");
+    return this.repos
+      .map((r) => ({ kind: "repo", ...r, space: this.spaceFor(r.path, r.machine), score: score(q, r.name, `${r.where} ${r.machine ?? ""}`) }))
       .filter((r) => r.score !== null)
-      .sort((a, b) => a.score - b.score || Boolean(b.space) - Boolean(a.space) || a.name.localeCompare(b.name));
+      .sort((a, b) => a.score - b.score || order(a.machine).localeCompare(order(b.machine)) || Boolean(b.space) - Boolean(a.space) || a.name.localeCompare(b.name));
   }
 
   // What the preview shows for a row: a terminal's screen, or a repo's git state.
@@ -173,7 +218,7 @@ export default class Switch extends View {
       return term ? { key: `t:${term}`, terminal: term } : null;
     }
     if (r.kind === "agent") return { key: `t:${r.agent.address}`, terminal: r.agent.address };
-    return { key: `g:${r.path}`, repo: r.path };
+    return { key: `g:${r.machine ?? ""}:${r.path}`, repo: r.path, machine: r.machine };
   }
 
   // Load the preview for the selected row. `again`: the timer's reread, terminals only.
@@ -196,9 +241,10 @@ export default class Switch extends View {
           const r = await hc(["read", want.terminal]);
           lines = r.code === 0 ? r.stdout.replace(/\s+$/, "").split("\n") : [r.stderr.trim() || "can't read this terminal"];
         } else {
+          const on = want.machine ? { on: want.machine } : {};
           const [st, log] = await Promise.all([
-            exec("git", ["-C", want.repo, "status", "-sb"], { timeout: 5000 }),
-            exec("git", ["-C", want.repo, "log", "--oneline", "--decorate", "-n", "40"], { timeout: 5000 }),
+            exec("git", ["-C", want.repo, "status", "-sb"], { ...on, timeout: 5000 }),
+            exec("git", ["-C", want.repo, "log", "--oneline", "--decorate", "-n", "40"], { ...on, timeout: 5000 }),
           ]);
           lines = [...st.stdout.replace(/\s+$/, "").split("\n").slice(0, 12), "", ...log.stdout.replace(/\s+$/, "").split("\n")];
         }
@@ -222,7 +268,8 @@ export default class Switch extends View {
     if (r.kind === "space") run("space.select", { id: r.space.id });
     else if (r.kind === "agent") run("agent.focus", { terminal: r.agent.address });
     else if (r.space) run("space.select", { id: r.space.id });
-    else run("space.new", { folder: r.path });
+    // Always say where: left out, space.new may use the focused space's machine.
+    else run("space.new", { folder: r.path, machine: r.machine ?? "" });
   }
 
   render() {
@@ -252,10 +299,30 @@ export default class Switch extends View {
         .when(i !== this.at, (el) => el.hover((s) => s.bg(t.hover)))
         .on_click(() => this.go(r));
 
+    // Which machine a row lives on; nothing for this computer.
+    const tag = (el, machine) =>
+      machine
+        ? el.child(
+            h_flex()
+              .flex_none()
+              .gap(4)
+              .px(6)
+              .py(1)
+              .items_center()
+              .rounded(4)
+              .bg(t.raised)
+              .font_family(mono)
+              .text_size(10.5)
+              .text_color(t.muted)
+              .child(div().text_color(t.dim).child("󰒋"))
+              .child(div().max_w(120).truncate().child(machine)),
+          )
+        : el;
+
     const row = (r, i) => {
       if (r.kind === "space") {
         const s = r.space;
-        return base(r, i)
+        const el = base(r, i)
           .h(34)
           .child(
             h_flex()
@@ -272,11 +339,12 @@ export default class Switch extends View {
               .child([...s.name][0]?.toUpperCase() ?? "?"),
           )
           .child(div().flex_1().min_w(0).truncate().text_color(t.foreground).when(s.active, (d) => d.font_semibold()).child(s.name));
+        return tag(el, r.machine);
       }
       if (r.kind === "agent") {
         const a = r.agent;
         const says = a.status === "working" && r.since ? `working ${ago(r.since)}` : SAYS[a.status];
-        return base(r, i)
+        const el = base(r, i)
           .h(44)
           .child(glyph(t, a.status))
           .child(icon(a.program, t.muted))
@@ -286,21 +354,21 @@ export default class Switch extends View {
               .min_w(0)
               .child(div().truncate().text_color(t.foreground).font_semibold().child(a.program?.name ?? a.app ?? "agent"))
               .child(div().truncate().text_size(11.5).text_color(t.dim).child(`${a.space_name} · ${a.tab_name}${a.title ? ` · ${a.title}` : ""}`)),
-          )
-          .child(
-            div()
-              .flex_none()
-              .text_size(11)
-              .text_color(a.status === "blocked" ? t.blocked : a.status === "done" ? t.done : t.dim)
-              .when(a.status === "blocked" || a.status === "done", (d) => d.font_semibold())
-              .child(says),
           );
+        return tag(el, r.machine).child(
+          div()
+            .flex_none()
+            .text_size(11)
+            .text_color(a.status === "blocked" ? t.blocked : a.status === "done" ? t.done : t.dim)
+            .when(a.status === "blocked" || a.status === "done", (d) => d.font_semibold())
+            .child(says),
+        );
       }
-      return base(r, i)
+      const el = base(r, i)
         .h(32)
         .child(div().w(8).flex_none().text_color(r.space ? t.accent : t.dim).child(r.space ? "●" : ""))
-        .child(div().flex_none().max_w(200).truncate().text_color(t.foreground).when(Boolean(r.space), (d) => d.font_semibold()).child(r.name))
-        .child(div().flex_1().min_w(0).truncate().text_size(11.5).text_color(t.dim).child(r.where));
+        .child(div().flex_none().max_w(200).truncate().text_color(t.foreground).when(Boolean(r.space), (d) => d.font_semibold()).child(r.name));
+      return tag(el, r.machine).child(div().flex_1().min_w(0).truncate().text_size(11.5).text_color(t.dim).child(r.where));
     };
 
     const segment = (mode) =>
@@ -325,18 +393,27 @@ export default class Switch extends View {
         .map(([c, w]) => `${c} ${w}`)
         .join(" · ") || `${all.length} agents, all idle`;
     } else if (this.mode === "spaces") summary = `${spaces().length} spaces`;
-    else summary = this.repos ? `${this.repos.length} repos · tms search_dirs` : "tms search_dirs";
+    else {
+      const where = new Set(this.repos.map((r) => r.machine ?? "")).size;
+      summary = [
+        `${this.repos.length} repos${where > 1 ? ` on ${where} machines` : ""}`,
+        this.scanning ? "scanning…" : null,
+        this.unreachable.length ? `can't reach ${this.unreachable.join(", ")}` : null,
+      ]
+        .filter(Boolean)
+        .join(" · ");
+    }
 
     const empty =
       this.mode === "spaces"
         ? "No space matches"
         : this.mode === "agents"
           ? agents().length ? "No agent matches" : "No agents running"
-          : this.error
-            ? `Couldn't scan: ${this.error}`
-            : this.repos === null
-              ? "Looking for repos…"
-              : "No project matches";
+          : this.scanning
+            ? "Looking for repos…"
+            : this.repos.length
+              ? "No project matches"
+              : "No repos found";
 
     const lines = this.preview.lines;
     const preview = v_flex()
