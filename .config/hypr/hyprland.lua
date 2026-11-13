@@ -353,6 +353,17 @@ hl.window_rule({
 	move = "(monitor_w*0.1) (monitor_h*0.1)",
 })
 
+-- Herdr (terminals + agents) always paints an opaque window and has no
+-- background-opacity of its own, so let the blurred wallpaper through here to
+-- match ghostty. This fades the whole window (text too), hence a bit above
+-- ghostty's 0.82; inactive_opacity still multiplies on top when unfocused.
+hl.window_rule({
+	name = "herdr-translucent",
+	match = { class = "^(herdr-app)$" },
+
+	opacity = "0.9",
+})
+
 hl.bind(
 	"switch:off:Lid Switch",
 	hl.dsp.exec_cmd('hyprctl keyword monitor "eDP-1, preferred, auto, 1"'),
