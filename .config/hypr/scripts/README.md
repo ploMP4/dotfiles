@@ -19,6 +19,7 @@ MOD+B ─▶ quickshell picker ─▶ set-wallpaper.sh <file>
         ▼
    wallust-apply.sh --apply   reload/animate ghostty, hyprland, waybar,
                               neovim, tmux, tms
+                              (Herdr re-themes itself when its theme file changes)
 ```
 
 ## Scripts
@@ -36,7 +37,8 @@ The picker UI is `~/.config/quickshell/wallpaper/shell.qml`.
 
 `~/.cache/wallust/accent` · `~/.config/ghostty/wallust` · `~/.config/wofi/style.css`
 · `~/.config/waybar/style.css` · `~/.cache/wallust/{p10k-accent.zsh,tmux.conf}` ·
-`~/.config/stochos/config.toml` `[colors]`. Edit the matching `*.in` templates
+`~/.config/stochos/config.toml` `[colors]` · `~/.config/herdr-app/themes/wallust.json`
+(Herdr's `wallust` theme, picked in its `settings.json`; skipped if Herdr isn't installed). Edit the matching `*.in` templates
 or `wallust-colors.py` instead.
 
 ## Dependencies

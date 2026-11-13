@@ -13,11 +13,13 @@ colour files:
     ~/.cache/wallust/p10k-accent.zsh  sourced by .zshrc
     ~/.cache/wallust/tmux.conf        sourced by tmux.conf
     ~/.config/stochos/config.toml     [colors] retinted in place (alpha preserved)
+    ~/.config/herdr-app/themes/wallust.json  Herdr theme (live-reloaded by Herdr)
 """
 
 from __future__ import annotations
 
 import colorsys
+import json
 import re
 from pathlib import Path
 
@@ -31,6 +33,8 @@ WAYBAR_OUT = HOME / ".config/waybar/style.css"
 P10K_OUT = HOME / ".cache/wallust/p10k-accent.zsh"
 TMUX_OUT = HOME / ".cache/wallust/tmux.conf"
 STOCHOS = HOME / ".config/stochos/config.toml"
+HERDR_HOME = HOME / ".config/herdr-app"
+HERDR_THEME = HERDR_HOME / "themes/wallust.json"
 
 # Tuning knobs.
 TARGET_L = 0.11             # normalised background lightness (lower = darker)
@@ -135,6 +139,70 @@ def retint_stochos(bg_hex: str, accent: str, accent2: str) -> None:
     write(STOCHOS, text)
 
 
+def write_herdr(ghostty_text: str, bg_hex: str, accent: str, accent2: str) -> None:
+    """Herdr theme: the terminal colours ghostty uses, panels tinted to the wallpaper.
+
+    Herdr watches its themes/ folder, so rewriting the file re-themes the window
+    live. Panel shades share the background's hue at fixed lightness steps, the
+    same way the background itself is normalised; text keeps TokyoNight's.
+    """
+    if not HERDR_HOME.is_dir():  # Herdr not installed
+        return
+    pal = dict(re.findall(r"^palette = (\d+)=#([0-9A-Fa-f]{6})", ghostty_text, re.M))
+    ansi = ["#" + pal.get(str(i), "000000").lower() for i in range(16)]
+
+    def field(key: str, default: str) -> str:
+        m = re.search(r"^" + key + r" = " + HEX_RE, ghostty_text, re.M)
+        return "#" + (m.group(1) if m else default).lower()
+
+    fg = field("foreground", "c0caf5")
+    selection = field("selection-background", "283457")
+    h, s = hue_sat(bg_hex)
+
+    def shade(l: float, sat_cap: float = 0.45) -> str:
+        return hsl_hex(h, min(s, sat_cap), l).lower()
+
+    acc, ink = accent.lower(), "#15161e"
+    theme = {
+        "background": "#" + bg_hex.lower(),
+        "foreground": fg,
+        "selection": selection,
+        "cursor": acc,
+        "ansi": ansi,
+        "colors": {
+            "canvas": shade(TARGET_L - 0.025),
+            "chrome": shade(TARGET_L - 0.015),
+            "surface": shade(TARGET_L + 0.025),
+            "popover": shade(TARGET_L + 0.035),
+            "raised": shade(TARGET_L + 0.06),
+            "hover": shade(TARGET_L + 0.08),
+            "selected": acc + "33",
+            "border": shade(TARGET_L + 0.09, 0.30),
+            "input": shade(TARGET_L + 0.17, 0.30),
+            "foreground": fg,
+            "muted": ansi[7],
+            "dim": "#737aa2",
+            "accent": acc,
+            "accent_foreground": ink,
+            "solid": acc,
+            "solid_foreground": ink,
+            "working": accent2.lower(),
+            "blocked": ansi[1],
+            "done": ansi[2],
+            "idle": "#737aa2",
+            "unknown": "#737aa2",
+        },
+    }
+    text = json.dumps(theme, indent=2) + "\n"
+    try:
+        if HERDR_THEME.read_text() == text:
+            return  # unchanged: don't make Herdr reload for nothing
+    except OSError:
+        pass
+    HERDR_THEME.parent.mkdir(parents=True, exist_ok=True)
+    write(HERDR_THEME, text)
+
+
 def main() -> None:
     text = GHOSTTY.read_text()
 
@@ -176,6 +244,7 @@ def main() -> None:
     write_p10k(accent, anchor, accent2)
     write_tmux(accent)
     retint_stochos(bg_hex, accent, accent2)
+    write_herdr(text, bg_hex, accent, accent2)
 
 
 if __name__ == "__main__":
